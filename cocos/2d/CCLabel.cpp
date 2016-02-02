@@ -454,7 +454,7 @@ void Label::reset()
     _outlineSize = 0.f;
     _bmFontPath = "";
     _systemFontDirty = false;
-    _systemFont = "Helvetica";
+    _systemFont = "font/DFZongYiW7-GB.ttf";
     _systemFontSize = 12;
 
     if (_horizontalKernings)
@@ -1543,7 +1543,7 @@ void Label::drawSelf(bool visibleByCamera, Renderer* renderer, uint32_t flags)
 
 void Label::setSystemFontName(const std::string& systemFont)
 {
-    if (systemFont != _systemFont)
+    if (systemFont != _systemFont && systemFont.length() > 0)
     {
         _systemFont = systemFont;
         _systemFontDirty = true;
