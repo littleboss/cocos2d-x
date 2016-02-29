@@ -23,10 +23,10 @@ THE SOFTWARE.
  ****************************************************************************/
 package org.cocos2dx.lib;
 
-import android.opengl.GLSurfaceView;
-
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
+
+import android.opengl.GLSurfaceView;
 public class Cocos2dxRenderer implements GLSurfaceView.Renderer {
     // ===========================================================
     // Constants
@@ -45,10 +45,14 @@ public class Cocos2dxRenderer implements GLSurfaceView.Renderer {
     private int mScreenWidth;
     private int mScreenHeight;
     private boolean mNativeInitCompleted = false;
+    private Cocos2dxActivity activity;
 
     // ===========================================================
     // Constructors
     // ===========================================================
+    public Cocos2dxRenderer(Cocos2dxActivity activity) {
+    	this.activity = activity;
+    }
 
     // ===========================================================
     // Getter & Setter
@@ -72,6 +76,7 @@ public class Cocos2dxRenderer implements GLSurfaceView.Renderer {
         Cocos2dxRenderer.nativeInit(this.mScreenWidth, this.mScreenHeight);
         this.mLastTickInNanoSeconds = System.nanoTime();
         mNativeInitCompleted = true;
+        this.activity.onSurfaceCreatedCallback();
     }
 
     @Override
