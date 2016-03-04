@@ -158,6 +158,16 @@ void SkeletonAnimation::setAnimationStateData (spAnimationStateData* stateData) 
 void SkeletonAnimation::setMix (const std::string& fromAnimation, const std::string& toAnimation, float duration) {
 	spAnimationStateData_setMixByName(_state->data, fromAnimation.c_str(), toAnimation.c_str(), duration);
 }
+    
+bool SkeletonAnimation::containAnimation(const std::string &name) {
+    spAnimation* animation = spSkeletonData_findAnimation(_skeleton->data, name.c_str());
+    if (!animation) {
+        log("Spine: Animation not found: %s", name.c_str());
+        return false;
+    }
+    
+    return true;
+}
 
 spTrackEntry* SkeletonAnimation::setAnimation (int trackIndex, const std::string& name, bool loop) {
 	spAnimation* animation = spSkeletonData_findAnimation(_skeleton->data, name.c_str());

@@ -87,6 +87,13 @@
         
 --------------------------------
 -- 
+-- @function [parent=#SkeletonAnimation] containAnimation 
+-- @param self
+-- @param #string name
+-- @return bool#bool ret (return value: bool)
+        
+--------------------------------
+-- 
 -- @function [parent=#SkeletonAnimation] clearTrack 
 -- @param self
 -- @return SkeletonAnimation#SkeletonAnimation self (return value: sp.SkeletonAnimation)
