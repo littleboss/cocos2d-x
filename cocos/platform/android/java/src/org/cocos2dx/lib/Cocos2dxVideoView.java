@@ -26,6 +26,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnErrorListener;
 import android.net.Uri;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -80,6 +81,8 @@ public class Cocos2dxVideoView extends SurfaceView implements MediaPlayerControl
 
     protected Cocos2dxActivity mCocos2dxActivity = null;
     
+    private DisplayMetrics mDisplayMetrics = null; 
+    
     protected int mViewLeft = 0;
     protected int mViewTop = 0;
     protected int mViewWidth = 0;
@@ -99,6 +102,9 @@ public class Cocos2dxVideoView extends SurfaceView implements MediaPlayerControl
     public Cocos2dxVideoView(Cocos2dxActivity activity,int tag) {
         super(activity);
         
+        mDisplayMetrics = new DisplayMetrics();
+        activity.getWindowManager().getDefaultDisplay().getMetrics(mDisplayMetrics);
+        
         mViewTag = tag;
         mCocos2dxActivity = activity;
         initVideoView();
@@ -107,7 +113,7 @@ public class Cocos2dxVideoView extends SurfaceView implements MediaPlayerControl
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         if (mVideoWidth == 0 || mVideoHeight == 0) {
-            setMeasuredDimension(mViewWidth, mViewHeight);
+            setMeasuredDimension(mDisplayMetrics.widthPixels, mDisplayMetrics.heightPixels);
             Log.i(TAG, ""+mViewWidth+ ":" +mViewHeight);
         }
         else {
@@ -202,7 +208,7 @@ public class Cocos2dxVideoView extends SurfaceView implements MediaPlayerControl
         if((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP)
         {
             if (isPlaying()) {
-                pause();
+            	stop();
             } else if(mCurrentState == STATE_PAUSED){
                 resume();
             }
@@ -285,7 +291,7 @@ public class Cocos2dxVideoView extends SurfaceView implements MediaPlayerControl
         release(false);
         
         try {
-            //if (mMediaPlayer == null) {
+            if (mMediaPlayer == null) {
                 mMediaPlayer = new MediaPlayer();
                 mMediaPlayer.setOnPreparedListener(mPreparedListener);
                 mMediaPlayer.setOnVideoSizeChangedListener(mSizeChangedListener);                
@@ -296,7 +302,10 @@ public class Cocos2dxVideoView extends SurfaceView implements MediaPlayerControl
                 mMediaPlayer.setDisplay(mSurfaceHolder);
                 mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 mMediaPlayer.setScreenOnWhilePlaying(true);
-            //}
+            } else {
+            	mMediaPlayer.reset();
+            	mMediaPlayer.setDisplay(mSurfaceHolder);
+            }
             
             mDuration = -1;
             mCurrentBufferPercentage = 0;
@@ -571,8 +580,11 @@ public class Cocos2dxVideoView extends SurfaceView implements MediaPlayerControl
         {
             // after we return from this we can't use the surface any more
             mSurfaceHolder = null;
-            
-            release(true);
+
+            if(mMediaPlayer != null && mMediaPlayer.isPlaying()){
+            	mSeekWhenPrepared = mMediaPlayer.getCurrentPosition();
+				mMediaPlayer.stop();
+			}
         }
     };
 
