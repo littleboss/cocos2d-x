@@ -155,6 +155,17 @@ void setVideoVisible(int index,bool visible)
     }
 }
 
+void setVideoTouchable(int index,bool touchable)
+{
+    JniMethodInfo t;
+
+    if (JniHelper::getStaticMethodInfo(t, CLASS_NAME, "setVideoTouchable", "(IZ)V")) {
+        t.env->CallStaticVoidMethod(t.classID, t.methodID, index, touchable);
+
+        t.env->DeleteLocalRef(t.classID);
+    }
+}
+
 void setVideoKeepRatioEnabled(int index,bool enabled)
 {
     JniMethodInfo t;
@@ -335,6 +346,14 @@ void VideoPlayer::setVisible(bool visible)
     if (! _videoURL.empty())
     {
         setVideoVisible(_videoPlayerIndex,visible);
+    } 
+}
+
+void VideoPlayer::setTouchable(bool touchable)
+{
+    if (! _videoURL.empty())
+    {
+        setVideoTouchable(_videoPlayerIndex,touchable);
     } 
 }
 

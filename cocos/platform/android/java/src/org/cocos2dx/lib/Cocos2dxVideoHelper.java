@@ -65,6 +65,7 @@ public class Cocos2dxVideoHelper {
     private final static int VideoTaskRestart = 10;
     private final static int VideoTaskKeepRatio = 11;
     private final static int VideoTaskFullScreen = 12;
+    private final static int VideoTaskSetTouchable = 13;
     final static int KeyEventBack = 1000;
     
     static class VideoHandler extends Handler{
@@ -139,6 +140,15 @@ public class Cocos2dxVideoHelper {
                     helper._setVideoVisible(msg.arg1, true);
                 } else {
                     helper._setVideoVisible(msg.arg1, false);
+                }
+                break;
+            }
+            case VideoTaskSetTouchable: {
+                Cocos2dxVideoHelper helper = mReference.get();
+                if (msg.arg2 == 1) {
+                    helper._setVideoTouchable(msg.arg1, true);
+                } else {
+                    helper._setVideoTouchable(msg.arg1, false);
                 }
                 break;
             }
@@ -411,6 +421,26 @@ public class Cocos2dxVideoHelper {
             } else {
                 videoView.setVisibility(View.INVISIBLE);
             }
+        }
+    }
+
+    public static void setVideoTouchable(int index, boolean touchable) {
+        Message msg = new Message();
+        msg.what = VideoTaskSetTouchable;
+        msg.arg1 = index;
+        if (touchable) {
+            msg.arg2 = 1;
+        } else {
+            msg.arg2 = 0;
+        }
+        
+        mVideoHandler.sendMessage(msg);
+    }
+    
+    private void _setVideoTouchable(int index, boolean touchable) {
+        Cocos2dxVideoView videoView = sVideoViews.get(index);
+        if (videoView != null) {
+            videoView.setTouchable(touchable);
         }
     }
     

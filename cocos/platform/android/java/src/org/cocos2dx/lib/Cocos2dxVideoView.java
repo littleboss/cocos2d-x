@@ -98,6 +98,7 @@ public class Cocos2dxVideoView extends SurfaceView implements MediaPlayerControl
     protected int mFullScreenHeight = 0;
     
     private int mViewTag = 0;
+    private boolean mTouchable = true;
     
     public Cocos2dxVideoView(Cocos2dxActivity activity,int tag) {
         super(activity);
@@ -190,6 +191,10 @@ public class Cocos2dxVideoView extends SurfaceView implements MediaPlayerControl
         }
         super.setVisibility(visibility);
     }
+
+    public void setTouchable(boolean touchable) {
+        mTouchable = touchable;
+    }
     
     private void initVideoView() {
         mVideoWidth = 0;
@@ -205,6 +210,9 @@ public class Cocos2dxVideoView extends SurfaceView implements MediaPlayerControl
     
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if (!mTouchable) {
+            return true;
+        }
         if((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP)
         {
             if (isPlaying()) {
