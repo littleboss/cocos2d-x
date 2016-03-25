@@ -411,6 +411,11 @@ void VideoPlayer::setVisible(bool visible)
     }
 }
 
+void VideoPlayer::setTouchable(bool touchable)
+{
+    
+}
+
 void VideoPlayer::addEventListener(const VideoPlayer::ccVideoPlayerCallback& callback)
 {
     _eventCallback = callback;
