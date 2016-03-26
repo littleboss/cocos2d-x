@@ -242,6 +242,8 @@ public:
      * @return true if get the no-null function pointer otherwise false.
      */
     virtual bool pushFunctionByHandler(int nHandler);
+
+    virtual int beginCallFunction(const char* functionName);
     
     /**
      * Execute the lua function on the -(numArgs + 1) index on the stack by the numArgs variables passed.
