@@ -882,12 +882,26 @@ void Button::copySpecialProperties(Widget *widget)
         setCapInsetsNormalRenderer(button->_capInsetsNormal);
         setCapInsetsPressedRenderer(button->_capInsetsPressed);
         setCapInsetsDisabledRenderer(button->_capInsetsDisabled);
-        if(nullptr != button->getTitleRenderer())
+
+        Label* buttonTitle = button->getTitleRenderer();
+        if(nullptr != buttonTitle)
         {
             setTitleText(button->getTitleText());
             setTitleFontName(button->getTitleFontName());
             setTitleFontSize(button->getTitleFontSize());
             setTitleColor(button->getTitleColor());
+
+            if(buttonTitle->getLabelEffectType() == LabelEffect::OUTLINE)
+            {
+                const Color4F& effectColorF = buttonTitle->getEffectColor();
+                Color4B outlineColor;
+                outlineColor.r = effectColorF.r * 255.0f;
+                outlineColor.g = effectColorF.g * 255.0f;
+                outlineColor.b = effectColorF.b * 255.0f;
+                outlineColor.a = effectColorF.a * 255.0f;
+
+                _titleRenderer->enableOutline(outlineColor, buttonTitle->getOutlineSize());
+            }
         }
         setPressedActionEnabled(button->_pressedActionEnabled);
         setZoomScale(button->_zoomScale);
