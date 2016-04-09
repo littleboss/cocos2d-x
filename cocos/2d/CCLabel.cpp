@@ -454,7 +454,7 @@ void Label::reset()
     _outlineSize = 0.f;
     _bmFontPath = "";
     _systemFontDirty = false;
-    _systemFont = "font/playboy_font.ttf";
+    _systemFont = "font/LiHei Pro.ttf";
     _systemFontSize = 12;
 
     if (_horizontalKernings)
