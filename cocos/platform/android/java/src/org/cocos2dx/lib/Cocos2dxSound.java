@@ -283,7 +283,7 @@ public class Cocos2dxSound {
             }
         } catch (final Exception e) {
             soundID = Cocos2dxSound.INVALID_SOUND_ID;
-            Log.e(Cocos2dxSound.TAG, "error: " + e.getMessage(), e);
+            Log.e(Cocos2dxSound.TAG, "error: " + path + e.getMessage(), e);
         }
 
         // mSoundPool.load returns 0 if something goes wrong, for example a file does not exist
