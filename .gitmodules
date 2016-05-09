@@ -1,3 +1,6 @@
 [submodule "external"]
 	path = external
 	url = git@120.26.43.151:playboy/cocos2dx-external.git
+[submodule "tools/cocos2d-console"]
+	path = tools/cocos2d-console
+	url = git://github.com/cocos2d/cocos2d-console.git
