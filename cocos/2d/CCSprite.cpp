@@ -323,7 +323,7 @@ Sprite::Sprite(void)
 #endif //CC_SPRITE_DEBUG_DRAW
 }
 
-Sprite::~Sprite(void)
+Sprite::~Sprite()
 {
     CC_SAFE_RELEASE(_spriteFrame);
     CC_SAFE_RELEASE(_texture);
@@ -1073,6 +1073,10 @@ void Sprite::setSpriteFrame(SpriteFrame *spriteFrame)
     if(spriteFrame->hasPolygonInfo())
     {
         _polyInfo = spriteFrame->getPolygonInfo();
+    }
+    if (spriteFrame->hasAnchorPoint())
+    {
+        setAnchorPoint(spriteFrame->getAnchorPoint());
     }
 }
 

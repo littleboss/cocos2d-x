@@ -22,7 +22,7 @@
  THE SOFTWARE.
 ****************************************************************************/
 
-#include "UIScale9Sprite.h"
+#include "ui/UIScale9Sprite.h"
 #include "2d/CCSprite.h"
 #include "2d/CCSpriteFrameCache.h"
 #include "base/CCVector.h"
@@ -483,7 +483,11 @@ namespace ui {
         }
 
         applyBlendFunc();
-        this->setState(_brightState);
+        if (getGLProgramState()) {
+            _scale9Image->setGLProgramState(getGLProgramState());
+        } else {
+            this->setState(_brightState);
+        }
         if(this->_isPatch9)
         {
             size.width = size.width - 2;
@@ -604,16 +608,12 @@ namespace ui {
             break;
         }
         
-        if (nullptr != _scale9Image)
-        {
-            _scale9Image->setGLProgramState(glState);
-        }
-
+        setGLProgramState(glState);
         _brightState = state;
     }
 
 /** sets the opacity.
-    @warning If the texture has premultiplied alpha then, the R, G and B channels will be modifed.
+    @warning If the texture has premultiplied alpha then, the R, G and B channels will be modified.
     Values goes from 0 to 255, where 255 means fully opaque.
 */
 
@@ -857,7 +857,7 @@ namespace ui {
 
         this->cleanupSlicedSprites();
 
-        //we must invalide the transform when toggling scale9enabled
+        //we must invalid the transform when toggling scale9enabled
         _transformUpdated = _transformDirty = _inverseDirty = true;
 
         if (_scale9Enabled)
@@ -979,6 +979,20 @@ namespace ui {
             child->updateDisplayedOpacity(255);
         }
     }
+    
+    void Scale9Sprite::setGLProgram(GLProgram *glprogram) {
+        Node::setGLProgram(glprogram);
+        if (_scale9Image) {
+            _scale9Image->setGLProgram(glprogram);
+        }
+    }
+    
+    void Scale9Sprite::setGLProgramState(GLProgramState *glProgramState) {
+        Node::setGLProgramState(glProgramState);
+        if (_scale9Image) {
+            _scale9Image->setGLProgramState(glProgramState);
+        }
+    }
 
     Sprite* Scale9Sprite::getSprite()const
     {
@@ -1094,7 +1108,7 @@ namespace ui {
         auto atlasWidth = tex->getPixelsWide();
         auto atlasHeight = tex->getPixelsHigh();
 
-        //caculate texture coordinate
+        //calculate texture coordinate
         float leftWidth = 0, centerWidth = 0, rightWidth = 0;
         float topHeight = 0, centerHeight = 0, bottomHeight = 0;
 
@@ -1326,8 +1340,8 @@ namespace ui {
         CC_SAFE_DELETE_ARRAY(_sliceVertices);
         CC_SAFE_DELETE_ARRAY(_sliceIndices);
 
-        _sliceVertices = new V3F_C4B_T2F[slicedTotalVertexCount];
-        _sliceIndices = new unsigned short[slicedTotalIndices];
+        _sliceVertices = new (std::nothrow) V3F_C4B_T2F[slicedTotalVertexCount];
+        _sliceIndices = new (std::nothrow) unsigned short[slicedTotalIndices];
 
         unsigned short indicesStart = 0;
         const unsigned short indicesOffset = 6;
