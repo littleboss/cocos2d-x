@@ -283,8 +283,8 @@
     <Filter Include="cocostudio\TimelineAction\Skeleton">
       <UniqueIdentifier>{ca5e1475-3bfd-4aae-ad54-2e19d5021b92}</UniqueIdentifier>
     </Filter>
-    <Filter Include="extension\network">
-      <UniqueIdentifier>{9e8a7b42-512a-4de2-b7d9-6003ff03feea}</UniqueIdentifier>
+    <Filter Include="cocostudio\reader\WidgetReader\TabControlReader">
+      <UniqueIdentifier>{8686c220-18af-4bea-abce-f4797afd01f1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1944,8 +1944,14 @@
       <Filter>network</Filter>
     </ClCompile>
     <ClCompile Include="..\editor-support\cocostudio\WidgetReader\Light3DReader\Light3DReader.cpp" />
-    <ClCompile Include="..\..\extensions\network\CircularBuffer.cpp">
-      <Filter>extension\network</Filter>
+    <ClCompile Include="..\editor-support\cocostudio\WidgetReader\TabControlReader\TabControlReader.cpp">
+      <Filter>cocostudio\reader\WidgetReader\TabControlReader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ui\UITabControl.cpp">
+      <Filter>ui\UIWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\editor-support\cocostudio\LocalizationManager.cpp">
+      <Filter>cocostudio\json</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -3794,8 +3800,20 @@
     <ClInclude Include="..\ui\UIAbstractCheckButton.h">
       <Filter>ui</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\extensions\network\CircularBuffer.h">
-      <Filter>extension\network</Filter>
+    <ClInclude Include="..\editor-support\cocostudio\CSLanguageDataBinary_generated.h">
+      <Filter>cocostudio\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\editor-support\cocostudio\WidgetReader\TabControlReader\CSTabControl_generated.h">
+      <Filter>cocostudio\reader\WidgetReader\TabControlReader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\editor-support\cocostudio\WidgetReader\TabControlReader\TabControlReader.h">
+      <Filter>cocostudio\reader\WidgetReader\TabControlReader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ui\UITabControl.h">
+      <Filter>ui\UIWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\editor-support\cocostudio\LocalizationManager.h">
+      <Filter>cocostudio\json</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

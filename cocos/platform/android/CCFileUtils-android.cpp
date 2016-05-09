@@ -24,15 +24,13 @@ THE SOFTWARE.
 ****************************************************************************/
 
 #include "platform/CCPlatformConfig.h"
-#include "scripting/lua-bindings/manual/CCLuaEngine.h"
 #if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
 
-#include "CCFileUtils-android.h"
+#include "platform/android/CCFileUtils-android.h"
 #include "platform/CCCommon.h"
-#include "jni/Java_org_cocos2dx_lib_Cocos2dxHelper.h"
+#include "platform/android/jni/JniHelper.h"
 #include "android/asset_manager.h"
 #include "android/asset_manager_jni.h"
-#include "jni/CocosPlayClient.h"
 #include <stdlib.h>
 #include <sys/stat.h>
 
@@ -79,15 +77,7 @@ FileUtilsAndroid::~FileUtilsAndroid()
 
 bool FileUtilsAndroid::init()
 {
-    cocosplay::lazyInit();
-    if (cocosplay::isEnabled() && !cocosplay::isDemo())
-    {
-        _defaultResRootPath = cocosplay::getGameRoot();
-    }
-    else
-    {
-        _defaultResRootPath = "assets/";
-    }
+    _defaultResRootPath = "assets/";
 
     return FileUtils::init();
 }
@@ -151,11 +141,6 @@ bool FileUtilsAndroid::isFileExistInternal(const std::string& strFilePath) const
         return false;
     }
 
-    if (cocosplay::isEnabled() && !cocosplay::isDemo())
-    {
-        return cocosplay::fileExists(strFilePath);
-    }
-
     bool bFound = false;
 
     // Check whether file exists in apk.
@@ -201,16 +186,6 @@ bool FileUtilsAndroid::isDirectoryExistInternal(const std::string& dirPath) cons
     int lenOfAssets = 7;
 
     std::string tmpStr;
-    if (cocosplay::isEnabled() && !cocosplay::isDemo())
-    {
-        // redirect assets/*** path to cocosplay resource dir
-        tmpStr.append(_defaultResRootPath);
-        if ('/' != tmpStr[tmpStr.length() - 1])
-        {
-            tmpStr += '/';
-        }
-        tmpStr.append(s + lenOfAssets);
-    }
 
     // find absolute path in flash memory
     if (s[0] == '/')
@@ -265,7 +240,6 @@ Data FileUtilsAndroid::getData(const std::string& filename, bool forString)
     unsigned char* data = nullptr;
     ssize_t size = 0;
     string fullPath = fullPathForFilename(filename);
-    cocosplay::updateAssets(fullPath);
 
     if (fullPath[0] != '/')
     {
@@ -356,23 +330,7 @@ Data FileUtilsAndroid::getData(const std::string& filename, bool forString)
     }
     else
     {
-        unsigned char* buffer = 0;
-        LuaStack* stack = LuaEngine::getInstance()->getLuaStack();
-        if (stack->isXXTEA(data, size))
-        {
-            ssize_t len = 0;
-            buffer = stack->xxteaDecrypt(data, size, &len);
-
-            free(data);
-            data = NULL;
-            size = len;
-        }
-        else
-        {
-            buffer = data;
-        }
-        ret.fastSet(buffer, size);
-        cocosplay::notifyFileLoaded(fullPath);
+        ret.fastSet(data, size);
     }
 
     return ret;
@@ -396,7 +354,6 @@ Data FileUtilsAndroid::getDataFromFile(const std::string& filename)
 unsigned char* FileUtilsAndroid::getFileData(const std::string& filename, const char* mode, ssize_t * size)
 {
     unsigned char * data = 0;
-    unsigned char * buffer = 0;
 
     if ( filename.empty() || (! mode) )
     {
@@ -404,7 +361,6 @@ unsigned char* FileUtilsAndroid::getFileData(const std::string& filename, const 
     }
 
     string fullPath = fullPathForFilename(filename);
-    cocosplay::updateAssets(fullPath);
 
     if (fullPath[0] != '/')
     {
@@ -476,25 +432,8 @@ unsigned char* FileUtilsAndroid::getFileData(const std::string& filename, const 
         msg.append(filename).append(") failed!");
         CCLOG("%s", msg.c_str());
     }
-    else
-    {
-        LuaStack* stack = LuaEngine::getInstance()->getLuaStack();
-        if (stack->isXXTEA(data, *size))
-        {
-            ssize_t len = 0;
-            buffer = stack->xxteaDecrypt(data, *size, &len);
 
-            free(data);
-            data = NULL;
-            *size = len;
-        }
-        else
-        {
-            buffer = data;
-        }
-        cocosplay::notifyFileLoaded(fullPath);
-    }
-    return buffer;
+    return data;
 }
 
 string FileUtilsAndroid::getWritablePath() const
@@ -502,7 +441,7 @@ string FileUtilsAndroid::getWritablePath() const
     // Fix for Nexus 10 (Android 4.2 multi-user environment)
     // the path is retrieved through Java Context.getCacheDir() method
     string dir("");
-    string tmp = getFileDirectoryJNI();
+    string tmp = JniHelper::callStaticStringMethod("org/cocos2dx/lib/Cocos2dxHelper", "getCocos2dxWritablePath");
 
     if (tmp.length() > 0)
     {
