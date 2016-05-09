@@ -330,7 +330,22 @@ Data FileUtilsAndroid::getData(const std::string& filename, bool forString)
     }
     else
     {
-        ret.fastSet(data, size);
+        unsigned char* buffer = 0;
+        LuaStack* stack = LuaEngine::getInstance()->getLuaStack();
+        if (stack->isXXTEA(data, size))
+        {
+            ssize_t len = 0;
+            buffer = stack->xxteaDecrypt(data, size, &len);
+
+            free(data);
+            data = NULL;
+            size = len;
+        }
+        else
+        {
+            buffer = data;
+        }
+        ret.fastSet(buffer, size);
     }
 
     return ret;

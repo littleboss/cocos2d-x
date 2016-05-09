@@ -310,4 +310,23 @@ void executeVideoCallback(int index,int event)
     }
 }
 
+void setVideoTouchable(int index,bool touchable)
+{
+    JniMethodInfo t;
+
+    if (JniHelper::getStaticMethodInfo(t, CLASS_NAME, "setVideoTouchable", "(IZ)V")) {
+        t.env->CallStaticVoidMethod(t.classID, t.methodID, index, touchable);
+
+        t.env->DeleteLocalRef(t.classID);
+    }
+}
+
+void VideoPlayer::setTouchable(bool touchable)
+{
+    if (! _videoURL.empty())
+    {
+        setVideoTouchable(_videoPlayerIndex,touchable);
+    } 
+}
+
 #endif
