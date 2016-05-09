@@ -406,10 +406,6 @@ public:
     /** Get a shader program from the texture.*/
     GLProgram* getGLProgram() const;
 
-    /** Set if the texture is valid, when it been set as false, it will display as default "file missing texture" */
-    void setValid(bool valid) { _valid = valid; }
-
-    bool isValid() const { return _valid; }
     std::string getPath()const { return _filePath; }
 
 public:
@@ -493,6 +489,7 @@ private:
     //RGB888 to XXX
     static void convertRGB888ToRGBA8888(const unsigned char* data, ssize_t dataLen, unsigned char* outData);
     static void convertRGB888ToRGB565(const unsigned char* data, ssize_t dataLen, unsigned char* outData);
+    static void convertRGB888ToA8(const unsigned char* data, ssize_t dataLen, unsigned char* outData);
     static void convertRGB888ToI8(const unsigned char* data, ssize_t dataLen, unsigned char* outData);
     static void convertRGB888ToAI88(const unsigned char* data, ssize_t dataLen, unsigned char* outData);
     static void convertRGB888ToRGBA4444(const unsigned char* data, ssize_t dataLen, unsigned char* outData);

@@ -27,12 +27,11 @@
 
 #include "jsapi.h"
 #include "jsfriendapi.h"
-#include "js_bindings_core.h"
-#include "js_bindings_config.h"
+#include "scripting/js-bindings/manual/js_bindings_core.h"
+#include "scripting/js-bindings/manual/js_bindings_config.h"
 #include "cocos2d.h"
-#include "spidermonkey_specifics.h"
-#include "js-BindingsExport.h"
-#include "mozilla/Maybe.h"
+#include "scripting/js-bindings/manual/spidermonkey_specifics.h"
+#include "scripting/js-bindings/manual/js-BindingsExport.h"
 
 #define JSB_COMPATIBLE_WITH_COCOS2D_HTML5_BASIC_TYPES
 
@@ -65,13 +64,15 @@ class JSFunctionWrapper
 {
 public:
     JSFunctionWrapper(JSContext* cx, JS::HandleObject jsthis, JS::HandleValue fval);
+    JSFunctionWrapper(JSContext* cx, JS::HandleObject jsthis, JS::HandleValue fval, JS::HandleValue owner);
     ~JSFunctionWrapper();
 
     bool invoke(unsigned int argc, jsval *argv, JS::MutableHandleValue rval);
 private:
     JSContext *_cx;
-    mozilla::Maybe<JS::PersistentRootedObject> _jsthis;
-    mozilla::Maybe<JS::PersistentRootedValue> _fval;
+    JS::Heap<JSObject*> _jsthis;
+    JS::Heap<JS::Value> _fval;
+    JS::Heap<JS::Value> _owner;
 private:
     CC_DISALLOW_COPY_AND_ASSIGN(JSFunctionWrapper);
 };
@@ -119,7 +120,7 @@ bool jsval_to_ray(JSContext *cx, JS::HandleValue vp, cocos2d::Ray* ret);
 bool jsval_to_resourcedata(JSContext *cx, JS::HandleValue v, cocos2d::ResourceData* ret);
 
 // forward declaration
-CC_JS_DLL js_proxy_t* jsb_get_js_proxy(JS::HandleObject jsObj);
+CC_JS_DLL js_proxy_t* jsb_get_js_proxy(JSObject* jsObj);
 
 template <class T>
 bool jsvals_variadic_to_ccvector( JSContext *cx, /*jsval *vp, int argc,*/const JS::CallArgs& args, cocos2d::Vector<T>* ret)
@@ -262,7 +263,7 @@ jsval ushort_to_jsval( JSContext *cx, unsigned short number );
 jsval long_to_jsval( JSContext *cx, long number );
 jsval ulong_to_jsval(JSContext* cx, unsigned long v);
 jsval long_long_to_jsval(JSContext* cx, long long v);
-jsval std_string_to_jsval(JSContext* cx, const std::string& v);
+CC_JS_DLL jsval std_string_to_jsval(JSContext* cx, const std::string& v);
 jsval c_string_to_jsval(JSContext* cx, const char* v, size_t length = -1);
 jsval ccpoint_to_jsval(JSContext* cx, const cocos2d::Point& v);
 jsval ccrect_to_jsval(JSContext* cx, const cocos2d::Rect& v);
@@ -280,9 +281,12 @@ jsval meshVertexAttrib_to_jsval(JSContext* cx, const cocos2d::MeshVertexAttrib& 
 jsval uniform_to_jsval(JSContext* cx, const cocos2d::Uniform* uniform);
 jsval resourcedata_to_jsval(JSContext* cx, const cocos2d::ResourceData& v);
 
-template<class T>
-js_proxy_t *js_get_or_create_proxy(JSContext *cx, T *native_obj);
 
+// forward declaration
+template <class T>
+js_type_class_t *js_get_type_from_native(T* native_obj);
+
+// Ref version of ccvector_to_jsval
 template <class T>
 jsval ccvector_to_jsval(JSContext* cx, const cocos2d::Vector<T>& v)
 {
@@ -294,9 +298,10 @@ jsval ccvector_to_jsval(JSContext* cx, const cocos2d::Vector<T>& v)
         JS::RootedValue arrElement(cx);
         
         //First, check whether object is associated with js object.
-        js_proxy_t* jsproxy = js_get_or_create_proxy(cx, obj);
-        if (jsproxy) {
-            arrElement = OBJECT_TO_JSVAL(jsproxy->obj);
+        js_type_class_t *typeClass = js_get_type_from_native(obj);
+        JS::RootedObject jsobject(cx, jsb_ref_get_or_create_jsobject(cx, obj, typeClass, typeid(*obj).name()));
+        if (jsobject.get()) {
+            arrElement = OBJECT_TO_JSVAL(jsobject);
         }
 
         if (!JS_SetElement(cx, jsretArr, i, arrElement)) {
@@ -322,9 +327,11 @@ jsval ccmap_string_key_to_jsval(JSContext* cx, const cocos2d::Map<std::string, T
         T obj = iter->second;
         
         //First, check whether object is associated with js object.
-        js_proxy_t* jsproxy = js_get_or_create_proxy(cx, obj);
-        if (jsproxy) {
-            element = OBJECT_TO_JSVAL(jsproxy->obj);
+        js_type_class_t *typeClass = js_get_type_from_native(obj);
+        JS::RootedObject jsobject(cx, jsb_ref_get_or_create_jsobject(cx, obj, typeClass, typeid(*obj).name()));
+
+        if (jsobject.get()) {
+            element = OBJECT_TO_JSVAL(jsobject);
         }
         
         if (!key.empty())

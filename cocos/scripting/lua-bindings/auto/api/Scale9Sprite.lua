@@ -37,6 +37,8 @@
 --------------------------------
 -- brief Toggle 9-slice feature.<br>
 -- If Scale9Sprite is 9-slice disabled, the Scale9Sprite will rendered as a normal sprite.<br>
+-- warning: Don't use setScale9Enabled(false), use setRenderingType(RenderingType::SIMPLE) instead.<br>
+-- The setScale9Enabled(false) is kept only for back back compatibility.<br>
 -- param enabled True to enable 9-slice, false otherwise.<br>
 -- js NA
 -- @function [parent=#Scale9Sprite] setScale9Enabled 
@@ -390,6 +392,13 @@
         
 --------------------------------
 -- 
+-- @function [parent=#Scale9Sprite] setGlobalZOrder 
+-- @param self
+-- @param #float globalZOrder
+-- @return Scale9Sprite#Scale9Sprite self (return value: ccui.Scale9Sprite)
+        
+--------------------------------
+-- 
 -- @function [parent=#Scale9Sprite] setScaleY 
 -- @param self
 -- @param #float scaleY
@@ -419,6 +428,13 @@
         
 --------------------------------
 -- 
+-- @function [parent=#Scale9Sprite] setGLProgram 
+-- @param self
+-- @param #cc.GLProgram glprogram
+-- @return Scale9Sprite#Scale9Sprite self (return value: ccui.Scale9Sprite)
+        
+--------------------------------
+-- 
 -- @function [parent=#Scale9Sprite] updateDisplayedColor 
 -- @param self
 -- @param #color3b_table parentColor
@@ -429,6 +445,13 @@
 -- @function [parent=#Scale9Sprite] setContentSize 
 -- @param self
 -- @param #size_table size
+-- @return Scale9Sprite#Scale9Sprite self (return value: ccui.Scale9Sprite)
+        
+--------------------------------
+-- 
+-- @function [parent=#Scale9Sprite] setGLProgramState 
+-- @param self
+-- @param #cc.GLProgramState glProgramState
 -- @return Scale9Sprite#Scale9Sprite self (return value: ccui.Scale9Sprite)
         
 --------------------------------

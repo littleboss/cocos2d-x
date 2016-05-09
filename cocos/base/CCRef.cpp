@@ -34,10 +34,6 @@ THE SOFTWARE.
 
 NS_CC_BEGIN
 
-// EXPERIMENTAL: Enable this in order to get rid of retain/release
-// when using the Garbage Collector
-#define CC_ENABLE_GC_FOR_NATIVE_OBJECTS 0
-
 #if CC_REF_LEAK_DETECTION
 static void trackRef(Ref* ref);
 static void untrackRef(Ref* ref);
@@ -50,6 +46,7 @@ Ref::Ref()
 , _scriptObject(nullptr)
 , _rooted(false)
 , _scriptOwned(false)
+,_referenceCountAtRootTime(0)
 #endif
 {
 #if CC_ENABLE_SCRIPT_BINDING
@@ -70,6 +67,7 @@ Ref::~Ref()
     {
         ScriptEngineManager::getInstance()->getScriptEngine()->removeScriptObjectByObject(this);
     }
+#if !CC_ENABLE_GC_FOR_NATIVE_OBJECTS
     else
     {
         ScriptEngineProtocol* pEngine = ScriptEngineManager::getInstance()->getScriptEngine();
@@ -78,7 +76,8 @@ Ref::~Ref()
             pEngine->removeScriptObjectByObject(this);
         }
     }
-#endif
+#endif // !CC_ENABLE_GC_FOR_NATIVE_OBJECTS
+#endif // CC_ENABLE_SCRIPT_BINDING
 
 
 #if CC_REF_LEAK_DETECTION
@@ -91,36 +90,12 @@ void Ref::retain()
 {
     CCASSERT(_referenceCount > 0, "reference count should be greater than 0");
     ++_referenceCount;
-
-#if CC_ENABLE_SCRIPT_BINDING && CC_ENABLE_GC_FOR_NATIVE_OBJECTS
-    if (!_rooted && _scriptOwned)
-    {
-        auto scriptMgr = ScriptEngineManager::getInstance()->getScriptEngine();
-        if (scriptMgr && scriptMgr->getScriptType() == kScriptTypeJavascript)
-        {
-            scriptMgr->rootObject(this);
-            _rooted = true;
-        }
-    }
-#endif // CC_ENABLE_SCRIPT_BINDING
 }
 
 void Ref::release()
 {
     CCASSERT(_referenceCount > 0, "reference count should be greater than 0");
     --_referenceCount;
-
-#if CC_ENABLE_SCRIPT_BINDING && CC_ENABLE_GC_FOR_NATIVE_OBJECTS
-    if (_scriptOwned && _referenceCount==1 && _rooted)
-    {
-        auto scriptMgr = ScriptEngineManager::getInstance()->getScriptEngine();
-        if (scriptMgr && scriptMgr->getScriptType() == kScriptTypeJavascript)
-        {
-            scriptMgr->unrootObject(this);
-            _rooted = false;
-        }
-    }
-#endif // CC_ENABLE_SCRIPT_BINDING
 
     if (_referenceCount == 0)
     {

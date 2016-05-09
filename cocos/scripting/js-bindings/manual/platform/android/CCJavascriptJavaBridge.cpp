@@ -21,12 +21,12 @@
  */
  
 #include <android/log.h>
-#include "CCJavascriptJavaBridge.h"
+#include "scripting/js-bindings/manual/platform/android/CCJavascriptJavaBridge.h"
 #include "cocos2d.h"
 #include "platform/android/jni/JniHelper.h"
-#include "spidermonkey_specifics.h"
-#include "ScriptingCore.h"
-#include "js_manual_conversions.h"
+#include "scripting/js-bindings/manual/spidermonkey_specifics.h"
+#include "scripting/js-bindings/manual/ScriptingCore.h"
+#include "scripting/js-bindings/manual/js_manual_conversions.h"
 #include "base/ccUTF8.h"
 
 #define  LOG_TAG    "CCJavascriptJavaBridge"
@@ -46,7 +46,7 @@ JNIEXPORT jint JNICALL Java_org_cocos2dx_lib_Cocos2dxJavascriptJavaBridge_evalSt
         CCLOG("Cocos2dxJavascriptJavaBridge_evalString error, invalid string code");
         return 0;
     }
-    ScriptingCore::getInstance()->evalString(strValue.c_str(), nullptr);
+    ScriptingCore::getInstance()->evalString(strValue.c_str());
     return 1;
 }
 
