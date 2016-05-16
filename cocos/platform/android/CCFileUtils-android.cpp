@@ -465,7 +465,6 @@ unsigned char* FileUtilsAndroid::getFileData(const std::string& filename, const 
         {
             buffer = data;
         }
-        cocosplay::notifyFileLoaded(fullPath);
     }
 
     return data;
