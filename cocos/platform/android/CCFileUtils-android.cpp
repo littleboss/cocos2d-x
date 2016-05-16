@@ -24,6 +24,7 @@ THE SOFTWARE.
 ****************************************************************************/
 
 #include "platform/CCPlatformConfig.h"
+#include "scripting/lua-bindings/manual/CCLuaEngine.h"
 #if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
 
 #include "platform/android/CCFileUtils-android.h"
@@ -369,6 +370,7 @@ Data FileUtilsAndroid::getDataFromFile(const std::string& filename)
 unsigned char* FileUtilsAndroid::getFileData(const std::string& filename, const char* mode, ssize_t * size)
 {
     unsigned char * data = 0;
+    unsigned char * buffer = 0;
 
     if ( filename.empty() || (! mode) )
     {
@@ -446,6 +448,24 @@ unsigned char* FileUtilsAndroid::getFileData(const std::string& filename, const 
         std::string msg = "Get data from file(";
         msg.append(filename).append(") failed!");
         CCLOG("%s", msg.c_str());
+    }
+    else
+    {
+        LuaStack* stack = LuaEngine::getInstance()->getLuaStack();
+        if (stack->isXXTEA(data, *size))
+        {
+            ssize_t len = 0;
+            buffer = stack->xxteaDecrypt(data, *size, &len);
+
+            free(data);
+            data = NULL;
+            *size = len;
+        }
+        else
+        {
+            buffer = data;
+        }
+        cocosplay::notifyFileLoaded(fullPath);
     }
 
     return data;

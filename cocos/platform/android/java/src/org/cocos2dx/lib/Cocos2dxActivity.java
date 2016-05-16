@@ -23,6 +23,14 @@ THE SOFTWARE.
  ****************************************************************************/
 package org.cocos2dx.lib;
 
+import javax.microedition.khronos.egl.EGL10;
+import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.egl.EGLDisplay;
+
+import org.cocos2dx.lib.Cocos2dxHelper.Cocos2dxHelperListener;
+import org.cocos2dx.utils.PSNative;
+import org.cocos2dx.utils.PSNetwork;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -32,21 +40,12 @@ import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager.OnActivityResultListener;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
-
-import org.cocos2dx.lib.Cocos2dxHelper.Cocos2dxHelperListener;
-
-import javax.microedition.khronos.egl.EGL10;
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.egl.EGLDisplay;
 
 public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelperListener {
     // ===========================================================
@@ -262,6 +261,9 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
         sContext = this;
         this.mHandler = new Cocos2dxHandler(this);
         
+        PSNative.init(this);
+		PSNetwork.init(this);
+        
         Cocos2dxHelper.init(this);
         
         this.mGLContextAttrs = getGLContextAttrs();
@@ -389,7 +391,7 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
         if (isAndroidEmulator())
            this.mGLSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
 
-        this.mGLSurfaceView.setCocos2dxRenderer(new Cocos2dxRenderer());
+        this.mGLSurfaceView.setCocos2dxRenderer(new Cocos2dxRenderer(this));
         this.mGLSurfaceView.setCocos2dxEditText(edittext);
 
         // Set framelayout as the content view
@@ -421,6 +423,7 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
       return isEmulator;
    }
 
+   public abstract void onSurfaceCreatedCallback();
     // ===========================================================
     // Inner and Anonymous Classes
     // ===========================================================
