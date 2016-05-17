@@ -467,7 +467,7 @@ unsigned char* FileUtilsAndroid::getFileData(const std::string& filename, const 
         }
     }
 
-    return data;
+    return buffer;
 }
 
 string FileUtilsAndroid::getWritablePath() const
