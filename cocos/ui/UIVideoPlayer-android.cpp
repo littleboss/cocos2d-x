@@ -314,7 +314,7 @@ void VideoPlayer::setTouchable(bool touchable)
 {
     if (! _videoURL.empty())
     {
-        JniHelper::callStaticVoidMethod(videoHelperClassName, "stopVideo", _videoPlayerIndex,touchable);
+        JniHelper::callStaticVoidMethod(videoHelperClassName, "setVideoTouchable", _videoPlayerIndex,touchable);
     }
 }
 
