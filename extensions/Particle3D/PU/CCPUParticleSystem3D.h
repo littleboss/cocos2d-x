@@ -273,19 +273,19 @@ public:
     /**
      * default particle width
      */
-    const float getDefaultWidth(void) const;
+    float getDefaultWidth() const;
     void setDefaultWidth(const float width);
 
     /** 
      * default particle height
      */
-    const float getDefaultHeight(void) const;
+    float getDefaultHeight() const;
     void setDefaultHeight(const float height);
 
     /** 
      * default particle depth
      */
-    const float getDefaultDepth(void) const;
+    float getDefaultDepth() const;
     void setDefaultDepth(const float depth);
 
     Vec3 getDerivedPosition();
@@ -306,7 +306,7 @@ public:
     const std::string& getMaterialName() const { return _matName; };
 
     /** Forces emission of particles.
-     * @remarks The number of requested particles are the exact number that are emitted. No down-scalling is applied.
+     * @remarks The number of requested particles are the exact number that are emitted. No down-scaling is applied.
      */
     void forceEmission(PUEmitter* emitter, unsigned requested);
 

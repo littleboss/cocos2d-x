@@ -33,25 +33,39 @@ THE SOFTWARE.
 #endif
 
 #include "base/CCDirector.h"
+#include "base/ccUTF8.h"
 #include "base/uthash.h"
 #include "renderer/ccGLStateCache.h"
 #include "platform/CCFileUtils.h"
-
-#include "deprecated/CCString.h"
 
 // helper functions
 
 static void replaceDefines(const std::string& compileTimeDefines, std::string& out)
 {
     // Replace semicolons with '#define ... \n'
-    if (compileTimeDefines.size() > 0)
+    if (!compileTimeDefines.empty())
     {
-        size_t pos;
-        out = compileTimeDefines;
-        out.insert(0, "#define ");
-        while ((pos = out.find(';')) != std::string::npos)
+        // append ';' if the last char doesn't have one
+        auto copyDefines = compileTimeDefines;
+        if (copyDefines[copyDefines.length()-1] != ';')
+            copyDefines.append(1, ';');
+
+        std::string currentDefine;
+
+        for (auto itChar: copyDefines)
         {
-            out.replace(pos, 1, "\n#define ");
+            if (itChar == ';')
+            {
+                if (!currentDefine.empty())
+                {
+                    out.append("\n#define " + currentDefine);
+                    currentDefine.clear();
+                }
+            }
+            else
+            {
+                currentDefine.append(1, itChar);
+            }
         }
         out += "\n";
     }
@@ -59,6 +73,11 @@ static void replaceDefines(const std::string& compileTimeDefines, std::string& o
 
 
 NS_CC_BEGIN
+const char* GLProgram::SHADER_NAME_ETC1AS_POSITION_TEXTURE_COLOR = "#ShaderETC1ASPositionTextureColor";
+const char* GLProgram::SHADER_NAME_ETC1AS_POSITION_TEXTURE_COLOR_NO_MVP = "#ShaderETC1ASPositionTextureColor_noMVP";
+
+const char* GLProgram::SHADER_NAME_ETC1AS_POSITION_TEXTURE_GRAY = "#ShaderETC1ASPositionTextureGray";
+const char* GLProgram::SHADER_NAME_ETC1AS_POSITION_TEXTURE_GRAY_NO_MVP = "#ShaderETC1ASPositionTextureGray_noMVP";
 
 const char* GLProgram::SHADER_NAME_POSITION_TEXTURE_COLOR = "ShaderPositionTextureColor";
 const char* GLProgram::SHADER_NAME_POSITION_TEXTURE_COLOR_NO_MVP = "ShaderPositionTextureColor_noMVP";
@@ -220,7 +239,7 @@ bool GLProgram::initWithByteArrays(const GLchar* vShaderByteArray, const GLchar*
     _program = glCreateProgram();
     CHECK_GL_ERROR_DEBUG();
 
-    // convert defines here. If we do it in "compileShader" we will do it it twice.
+    // convert defines here. If we do it in "compileShader" we will do it twice.
     // a cache for the defines could be useful, but seems like overkill at this point
     std::string replacedDefines = "";
     replaceDefines(compileTimeDefines, replacedDefines);
@@ -334,7 +353,7 @@ void GLProgram::parseVertexAttribs()
     else
     {
         GLchar ErrorLog[1024];
-        glGetProgramInfoLog(_program, sizeof(ErrorLog), NULL, ErrorLog);
+        glGetProgramInfoLog(_program, sizeof(ErrorLog), nullptr, ErrorLog);
         CCLOG("Error linking shader program: '%s'\n", ErrorLog);
     }
 }
@@ -380,7 +399,7 @@ void GLProgram::parseUniforms()
                     GLenum __gl_error_code = glGetError();
                     if (__gl_error_code != GL_NO_ERROR)
                     {
-                        CCLOG("error: 0x%x", (int)__gl_error_code);
+                        CCLOG("error: 0x%x  uniformName: %s", (int)__gl_error_code, uniformName);
                     }
                     assert(__gl_error_code == GL_NO_ERROR);
 
@@ -392,7 +411,7 @@ void GLProgram::parseUniforms()
     else
     {
         GLchar ErrorLog[1024];
-        glGetProgramInfoLog(_program, sizeof(ErrorLog), NULL, ErrorLog);
+        glGetProgramInfoLog(_program, sizeof(ErrorLog), nullptr, ErrorLog);
         CCLOG("Error linking shader program: '%s'\n", ErrorLog);
 
     }
@@ -472,8 +491,9 @@ bool GLProgram::compileShader(GLuint* shader, GLenum type, const GLchar* source,
         }
         free(src);
 
-        return false;;
+        return false;
     }
+
     return (status == GL_TRUE);
 }
 
@@ -571,17 +591,15 @@ void GLProgram::use()
 
 static std::string logForOpenGLShader(GLuint shader)
 {
-    std::string ret;
-    GLint logLength = 0, charsWritten = 0;
+    GLint logLength = 0;
 
     glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logLength);
     if (logLength < 1)
         return "";
 
-    char *logBytes = (char*)malloc(logLength + 1);
-    glGetShaderInfoLog(shader, logLength, &charsWritten, logBytes);
-    logBytes[logLength] = '\0';
-    ret = logBytes;
+    char *logBytes = (char*)malloc(sizeof(char) * logLength);
+    glGetShaderInfoLog(shader, logLength, nullptr, logBytes);
+    std::string ret(logBytes);
 
     free(logBytes);
     return ret;
@@ -589,17 +607,15 @@ static std::string logForOpenGLShader(GLuint shader)
 
 static std::string logForOpenGLProgram(GLuint program)
 {
-    std::string ret;
-    GLint logLength = 0, charsWritten = 0;
+    GLint logLength = 0;
 
     glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logLength);
     if (logLength < 1)
         return "";
 
-    char *logBytes = (char*)malloc(logLength + 1);
-    glGetProgramInfoLog(program, logLength, &charsWritten, logBytes);
-    logBytes[logLength] = '\0';
-    ret = logBytes;
+    char *logBytes = (char*)malloc(sizeof(char) * logLength);
+    glGetProgramInfoLog(program, logLength, nullptr, logBytes);
+    std::string ret(logBytes);
 
     free(logBytes);
     return ret;
@@ -640,17 +656,17 @@ bool GLProgram::updateUniformLocation(GLint location, const GLvoid* data, unsign
     }
     else
     {
-        if (memcmp(element->second.first, data, bytes) == 0)
+        if (element->second.second < bytes)
         {
-            updated = false;
+            GLvoid* value = realloc(element->second.first, bytes);
+            memcpy(value, data, bytes);
+            _hashForUniforms[location] = std::make_pair(value, bytes);
         }
         else
         {
-            if (element->second.second < bytes)
+            if (memcmp(element->second.first, data, bytes) == 0)
             {
-                GLvoid* value = realloc(element->second.first, bytes);
-                memcpy(value, data, bytes );
-                _hashForUniforms[location] = std::make_pair(value, bytes);
+                updated = false;
             }
             else
                 memcpy(element->second.first, data, bytes);
@@ -894,9 +910,9 @@ void GLProgram::setUniformsForBuiltins(const Mat4 &matrixMV)
         // Getting Mach time per frame per shader using time could be extremely expensive.
         float time = _director->getTotalFrames() * _director->getAnimationInterval();
 
-        setUniformLocationWith4f(_builtInUniforms[GLProgram::UNIFORM_TIME], time/10.0, time, time*2, time*4);
-        setUniformLocationWith4f(_builtInUniforms[GLProgram::UNIFORM_SIN_TIME], time/8.0, time/4.0, time/2.0, sinf(time));
-        setUniformLocationWith4f(_builtInUniforms[GLProgram::UNIFORM_COS_TIME], time/8.0, time/4.0, time/2.0, cosf(time));
+        setUniformLocationWith4f(_builtInUniforms[GLProgram::UNIFORM_TIME], time/10.0f, time, time*2, time*4);
+        setUniformLocationWith4f(_builtInUniforms[GLProgram::UNIFORM_SIN_TIME], time/8.0f, time/4.0f, time/2.0f, sinf(time));
+        setUniformLocationWith4f(_builtInUniforms[GLProgram::UNIFORM_COS_TIME], time/8.0f, time/4.0f, time/2.0f, cosf(time));
     }
 
     if (_flags.usesRandom)
