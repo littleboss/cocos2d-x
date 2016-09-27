@@ -1,6 +1,6 @@
 /****************************************************************************
 Copyright (c) 2010-2012 cocos2d-x.org
-Copyright (c) 2013-2014 Chukong Technologies Inc.
+Copyright (c) 2013-2016 Chukong Technologies Inc.
 
 http://www.cocos2d-x.org
 
@@ -129,14 +129,24 @@ static NSSize _calculateRealSizeForString(NSAttributedString **str, id font, NSS
         while (actualSize.size.width > constrainSize.width ||
                actualSize.size.height > constrainSize.height) {
             fontSize = fontSize - 1;
+            if (fontSize < 0) {
+                actualSize = CGRectMake(0, 0, 0, 0);
+                break;
+            }
             
             NSMutableAttributedString *mutableString = [[*str mutableCopy] autorelease];
             *str = __attributedStringWithFontSize(mutableString, fontSize);
 
-            CGSize fitSize = [*str boundingRectWithSize:CGSizeMake( CGFLOAT_MAX, CGFLOAT_MAX)
-                                            options:NSStringDrawingUsesLineFragmentOrigin
-                                            context:nil].size;
-            
+#ifdef __MAC_10_11
+    #if __MAC_OS_X_VERSION_MAX_ALLOWED >= __MAC_10_11
+            CGSize fitSize = [*str boundingRectWithSize:CGSizeMake( CGFLOAT_MAX, CGFLOAT_MAX) options:NSStringDrawingUsesLineFragmentOrigin context:nil].size;
+    #else
+            CGSize fitSize = [*str boundingRectWithSize:CGSizeMake( CGFLOAT_MAX, CGFLOAT_MAX) options:NSStringDrawingUsesLineFragmentOrigin].size;
+    #endif
+#else
+            CGSize fitSize = [*str boundingRectWithSize:CGSizeMake( CGFLOAT_MAX, CGFLOAT_MAX) options:NSStringDrawingUsesLineFragmentOrigin].size;
+#endif
+
             if(fitSize.width == 0 || fitSize.height == 0) continue;
             actualSize.size = fitSize;
 
@@ -156,13 +166,23 @@ static NSSize _calculateRealSizeForString(NSAttributedString **str, id font, NSS
         while (actualSize.size.height > constrainSize.height
                ||actualSize.size.width > constrainSize.width) {
             fontSize = fontSize - 1;
+            if (fontSize < 0) {
+                actualSize = CGRectMake(0, 0, 0, 0);
+                break;
+            }
             
             NSMutableAttributedString *mutableString = [[*str mutableCopy] autorelease];
             *str = __attributedStringWithFontSize(mutableString, fontSize);
-            
-            CGSize fitSize = [*str boundingRectWithSize:CGSizeMake( constrainSize.width, CGFLOAT_MAX)
-                                                     options:NSStringDrawingUsesLineFragmentOrigin
-                                                     context:nil].size;
+
+#ifdef __MAC_10_11
+    #if __MAC_OS_X_VERSION_MAX_ALLOWED >= __MAC_10_11
+            CGSize fitSize = [*str boundingRectWithSize:CGSizeMake( constrainSize.width, CGFLOAT_MAX) options:NSStringDrawingUsesLineFragmentOrigin context:nil].size;
+    #else
+            CGSize fitSize = [*str boundingRectWithSize:CGSizeMake( constrainSize.width, CGFLOAT_MAX) options:NSStringDrawingUsesLineFragmentOrigin].size;
+    #endif
+#else
+            CGSize fitSize = [*str boundingRectWithSize:CGSizeMake( constrainSize.width, CGFLOAT_MAX) options:NSStringDrawingUsesLineFragmentOrigin].size;
+#endif
             
             if(fitSize.width == 0 || fitSize.height == 0) continue;
             actualSize.size = fitSize;

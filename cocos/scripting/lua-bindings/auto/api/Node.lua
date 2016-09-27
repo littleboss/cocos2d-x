@@ -209,11 +209,11 @@
 -- @return Node#Node self (return value: cc.Node)
         
 --------------------------------
--- Return the node's opacity.<br>
--- return A GLubyte value.
--- @function [parent=#Node] getOpacity 
+-- 
+-- @function [parent=#Node] _setLocalZOrder 
 -- @param self
--- @return unsigned char#unsigned char ret (return value: unsigned char)
+-- @param #int z
+-- @return Node#Node self (return value: cc.Node)
         
 --------------------------------
 -- Modify the camera mask for current node.<br>
@@ -548,7 +548,7 @@
 -- return The number of actions that are running plus the ones that are schedule to run.
 -- @function [parent=#Node] getNumberOfRunningActions 
 -- @param self
--- @return long#long ret (return value: long)
+-- @return int#int ret (return value: int)
         
 --------------------------------
 -- Calls children's updateTransform() method recursively.<br>
@@ -557,6 +557,19 @@
 -- e.g., `batchNode->addChild(myCustomNode)`, while you can only addChild(sprite) before.
 -- @function [parent=#Node] updateTransform 
 -- @param self
+-- @return Node#Node self (return value: cc.Node)
+        
+--------------------------------
+-- Sets the shader program for this node<br>
+-- Since v2.0, each rendering node must set its shader program.<br>
+-- It should be set in initialize phase.<br>
+-- code<br>
+-- node->setGLrProgram(GLProgramCache::getInstance()->getProgram(GLProgram::SHADER_NAME_POSITION_TEXTURE_COLOR));<br>
+-- endcode<br>
+-- param glprogram The shader program.
+-- @function [parent=#Node] setGLProgram 
+-- @param self
+-- @param #cc.GLProgram glprogram
 -- @return Node#Node self (return value: cc.Node)
         
 --------------------------------
@@ -572,7 +585,7 @@
 -- return The amount of children.
 -- @function [parent=#Node] getChildrenCount 
 -- @param self
--- @return long#long ret (return value: long)
+-- @return int#int ret (return value: int)
         
 --------------------------------
 -- Converts a Vec2 to node (local) space coordinates. The result is in Points.<br>
@@ -1089,19 +1102,6 @@
 -- @return mat4_table#mat4_table ret (return value: mat4_table)
         
 --------------------------------
--- Sets the shader program for this node<br>
--- Since v2.0, each rendering node must set its shader program.<br>
--- It should be set in initialize phase.<br>
--- code<br>
--- node->setGLrProgram(GLProgramCache::getInstance()->getProgram(GLProgram::SHADER_NAME_POSITION_TEXTURE_COLOR));<br>
--- endcode<br>
--- param glprogram The shader program.
--- @function [parent=#Node] setGLProgram 
--- @param self
--- @param #cc.GLProgram glprogram
--- @return Node#Node self (return value: cc.Node)
-        
---------------------------------
 -- Gets the scale factor of the node,  when X and Y have the same scale factor.<br>
 -- warning Assert when `_scaleX != _scaleY`<br>
 -- see setScale(float)<br>
@@ -1109,6 +1109,24 @@
 -- @function [parent=#Node] getScale 
 -- @param self
 -- @return float#float ret (return value: float)
+        
+--------------------------------
+-- Return the node's opacity.<br>
+-- return A GLubyte value.
+-- @function [parent=#Node] getOpacity 
+-- @param self
+-- @return unsigned char#unsigned char ret (return value: unsigned char)
+        
+--------------------------------
+--  !!! ONLY FOR INTERNAL USE<br>
+-- Sets the arrival order when this node has a same ZOrder with other children.<br>
+-- A node which called addChild subsequently will take a larger arrival order,<br>
+-- If two children have the same Z order, the child with larger arrival order will be drawn later.<br>
+-- warning This method is used internally for localZOrder sorting, don't change this manually<br>
+-- param orderOfArrival   The arrival order.
+-- @function [parent=#Node] updateOrderOfArrival 
+-- @param self
+-- @return Node#Node self (return value: cc.Node)
         
 --------------------------------
 --  Returns the normalized position.<br>

@@ -3,7 +3,7 @@
  Copyright (c) 2009      Valentin Milea
  Copyright (c) 2010-2012 cocos2d-x.org
  Copyright (c) 2011      Zynga Inc.
- Copyright (c) 2013-2014 Chukong Technologies Inc.
+ Copyright (c) 2013-2016 Chukong Technologies Inc.
 
  http://www.cocos2d-x.org
 
@@ -29,6 +29,7 @@
 #ifndef __CCNODE_H__
 #define __CCNODE_H__
 
+#include <cstdint>
 #include "base/ccMacros.h"
 #include "base/CCVector.h"
 #include "base/CCProtocols.h"
@@ -74,8 +75,6 @@ enum {
     kNodeOnExitTransitionDidStart,
     kNodeOnCleanup
 };
-
-bool CC_DLL nodeComparisonLess(Node* n1, Node* n2);
 
 class EventListener;
 
@@ -166,7 +165,19 @@ public:
      Helper function used by `setLocalZOrder`. Don't use it unless you know what you are doing.
      @js NA
      */
-    CC_DEPRECATED_ATTRIBUTE virtual void _setLocalZOrder(int z);
+    virtual void _setLocalZOrder(int z);
+
+    /** !!! ONLY FOR INTERNAL USE
+    * Sets the arrival order when this node has a same ZOrder with other children.
+    *
+    * A node which called addChild subsequently will take a larger arrival order,
+    * If two children have the same Z order, the child with larger arrival order will be drawn later.
+    *
+    * @warning This method is used internally for localZOrder sorting, don't change this manually
+    *
+    * @param orderOfArrival   The arrival order.
+    */
+    void updateOrderOfArrival();
 
     /**
      * Gets the local Z order of this node.
@@ -175,7 +186,9 @@ public:
      *
      * @return The local (relative to its siblings) Z order.
      */
+
     virtual int getLocalZOrder() const { return _localZOrder; }
+
     CC_DEPRECATED_ATTRIBUTE virtual int getZOrder() const { return getLocalZOrder(); }
 
     /**
@@ -762,7 +775,7 @@ public:
      * @return a Node with the given tag that can be cast to Type T.
     */
     template <typename T>
-    inline T getChildByTag(int tag) const { return static_cast<T>(getChildByTag(tag)); }
+    T getChildByTag(int tag) const { return static_cast<T>(getChildByTag(tag)); }
     
     /**
      * Gets a child from the container with its name.
@@ -782,7 +795,7 @@ public:
      * @return a Node with the given name that can be cast to Type T.
     */
     template <typename T>
-    inline T getChildByName(const std::string& name) const { return static_cast<T>(getChildByName(name)); }
+    T getChildByName(const std::string& name) const { return static_cast<T>(getChildByName(name)); }
     /** Search the children of the receiving node to perform processing for nodes which share a name.
      *
      * @param name The name to search for, supports c++11 regular expression.
@@ -913,6 +926,25 @@ public:
      * @note Don't call this manually unless a child added needs to be removed in the same frame.
      */
     virtual void sortAllChildren();
+
+    /**
+    * Sorts helper function
+    *
+    */
+    template<typename _T> inline
+    static void sortNodes(cocos2d::Vector<_T*>& nodes)
+    {
+        static_assert(std::is_base_of<Node, _T>::value, "Node::sortNodes: Only accept derived of Node!");
+#if CC_64BITS
+        std::sort(std::begin(nodes), std::end(nodes), [](_T* n1, _T* n2) {
+            return (n1->_localZOrderAndArrival < n2->_localZOrderAndArrival);
+        });
+#else
+        std::stable_sort(std::begin(nodes), std::end(nodes), [](_T* n1, _T* n2) {
+            return n1->_localZOrder < n2->_localZOrder;
+        });
+#endif
+    }
 
     /// @} end of Children and Parent
     
@@ -1154,7 +1186,7 @@ public:
     virtual Rect getBoundingBox() const;
 
     /** @deprecated Use getBoundingBox instead */
-    CC_DEPRECATED_ATTRIBUTE inline virtual Rect boundingBox() const { return getBoundingBox(); }
+    CC_DEPRECATED_ATTRIBUTE virtual Rect boundingBox() const { return getBoundingBox(); }
 
     /** Set event dispatcher for scene.
      *
@@ -1520,7 +1552,7 @@ public:
     virtual void setNodeToParentTransform(const Mat4& transform);
 
     /** @deprecated use getNodeToParentTransform() instead */
-    CC_DEPRECATED_ATTRIBUTE inline virtual AffineTransform nodeToParentTransform() const { return getNodeToParentAffineTransform(); }
+    CC_DEPRECATED_ATTRIBUTE virtual AffineTransform nodeToParentTransform() const { return getNodeToParentAffineTransform(); }
 
     /**
      * Returns the matrix that transform parent's space coordinates to the node's (local) space coordinates.
@@ -1532,7 +1564,7 @@ public:
     virtual AffineTransform getParentToNodeAffineTransform() const;
 
     /** @deprecated Use getParentToNodeTransform() instead */
-    CC_DEPRECATED_ATTRIBUTE inline virtual AffineTransform parentToNodeTransform() const { return getParentToNodeAffineTransform(); }
+    CC_DEPRECATED_ATTRIBUTE virtual AffineTransform parentToNodeTransform() const { return getParentToNodeAffineTransform(); }
 
     /**
      * Returns the world affine transform matrix. The matrix is in Pixels.
@@ -1543,7 +1575,7 @@ public:
     virtual AffineTransform getNodeToWorldAffineTransform() const;
 
     /** @deprecated Use getNodeToWorldTransform() instead */
-    CC_DEPRECATED_ATTRIBUTE inline virtual AffineTransform nodeToWorldTransform() const { return getNodeToWorldAffineTransform(); }
+    CC_DEPRECATED_ATTRIBUTE virtual AffineTransform nodeToWorldTransform() const { return getNodeToWorldAffineTransform(); }
 
     /**
      * Returns the inverse world affine transform matrix. The matrix is in Pixels.
@@ -1554,7 +1586,7 @@ public:
     virtual AffineTransform getWorldToNodeAffineTransform() const;
 
     /** @deprecated Use getWorldToNodeTransform() instead */
-    CC_DEPRECATED_ATTRIBUTE inline virtual AffineTransform worldToNodeTransform() const { return getWorldToNodeAffineTransform(); }
+    CC_DEPRECATED_ATTRIBUTE virtual AffineTransform worldToNodeTransform() const { return getWorldToNodeAffineTransform(); }
 
     /// @} end of Transformations
 
@@ -1881,8 +1913,12 @@ protected:
     mutable bool _additionalTransformDirty; ///< transform dirty ?
     bool _transformUpdated;         ///< Whether or not the Transform object was updated since the last frame
 
-    int _localZOrder;               ///< Local order (relative to its siblings) used to sort the node
+    std::int64_t _localZOrderAndArrival; /// cache, for 64bits compress optimize.
+    int _localZOrder; /// < Local order (relative to its siblings) used to sort the node
+
     float _globalZOrder;            ///< Global order used to sort the node
+
+    static unsigned int s_globalOrderOfArrival;
 
     Vector<Node*> _children;        ///< array of children nodes
     Node *_parent;                  ///< weak reference to parent node
@@ -1958,7 +1994,6 @@ public:
 private:
     CC_DISALLOW_COPY_AND_ASSIGN(Node);
 };
-
 
 /**
  * This is a helper function, checks a GL screen point is in content rectangle space.
