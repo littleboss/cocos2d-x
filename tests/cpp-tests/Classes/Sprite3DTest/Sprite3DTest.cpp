@@ -1,6 +1,6 @@
 /****************************************************************************
  Copyright (c) 2012 cocos2d-x.org
- Copyright (c) 2013-2014 Chukong Technologies Inc.
+ Copyright (c) 2013-2016 Chukong Technologies Inc.
  
  http://www.cocos2d-x.org
  
@@ -69,6 +69,7 @@ Sprite3DTests::Sprite3DTests()
     ADD_TEST_CASE(MotionStreak3DTest);
     ADD_TEST_CASE(Sprite3DPropertyTest);
     ADD_TEST_CASE(Sprite3DNormalMappingTest);
+    ADD_TEST_CASE(Issue16155Test);
 };
 
 //------------------------------------------------------------------
@@ -1490,7 +1491,7 @@ void Sprite3DWithOBBPerformanceTest::onTouchesMoved(const std::vector<Touch*>& t
 void Sprite3DWithOBBPerformanceTest::update(float dt)
 {
     char szText[16];
-    sprintf(szText,"%lu cubes",_obb.size());
+    sprintf(szText,"%lu cubes", static_cast<unsigned long>(_obb.size()));
     _labelCubeCount->setString(szText);
     
     if (_drawDebug)
@@ -1966,7 +1967,7 @@ NodeAnimationTest::NodeAnimationTest()
                                               _sprites[_vectorIndex]->setVisible(false);
                                               
                                               int tIndex = _vectorIndex + 1;
-                                              if(tIndex >= _sprites.size())
+                                              if(tIndex >= static_cast<int>(_sprites.size()))
                                                   _vectorIndex = 0;
                                               else
                                                   _vectorIndex++;
@@ -2553,12 +2554,12 @@ Sprite3DNormalMappingTest::Sprite3DNormalMappingTest()
         static bool reverseDir = false;
         node->setPosition3D(Vec3(radius * cos(angle), 0.0f, radius * sin(angle)));
         if (reverseDir){
-            angle -= 0.01;
+            angle -= 0.01f;
             if (angle < 0.0)
                 reverseDir = false;
         }
         else{
-            angle += 0.01;
+            angle += 0.01f;
             if (3.14159 < angle)
                 reverseDir = true;
         }
@@ -2588,6 +2589,9 @@ std::string Sprite3DNormalMappingTest::subtitle() const
     return "";
 }
 
+//
+//
+//
 Sprite3DPropertyTest::Sprite3DPropertyTest()
 {
     auto s = Director::getInstance()->getWinSize();
@@ -2688,4 +2692,29 @@ void Sprite3DPropertyTest::refreshSpriteRender()
         }
         mesh->setTexture(cacheTex, cocos2d::NTextureData::Usage::Diffuse, false);
     }
+}
+
+//
+// Issue16155Test
+//
+Issue16155Test::Issue16155Test()
+{
+    auto s = Director::getInstance()->getWinSize();
+
+    auto sprite = Sprite3D::create("Sprite3DTest/orc.c3b");
+
+    int rcBefore = sprite->getMeshByIndex(0)->getTexture()->getReferenceCount();
+    addChild(sprite);
+    removeChild(sprite);
+
+    cocos2d::log("Issue 16155: Ref count:%d. Run this test again. RC should be the same", rcBefore);
+}
+
+std::string Issue16155Test::title() const
+{
+    return "Issue16155 Test";
+}
+std::string Issue16155Test::subtitle() const
+{
+    return "Should not leak texture. See console";
 }

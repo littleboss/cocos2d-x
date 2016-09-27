@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2012 Zynga Inc.
- * Copyright (c) 2013-2014 Chukong Technologies Inc.
+ * Copyright (c) 2013-2016 Chukong Technologies Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@
 #include "scripting/js-bindings/manual/js_bindings_config.h"
 #include "scripting/js-bindings/manual/js_bindings_core.h"
 #include "storage/local-storage/LocalStorage.h"
-#include "cocos2d.h"
+#include "platform/CCFileUtils.h"
 
 // system
 #include "scripting/js-bindings/manual/localstorage/js_bindings_system_functions.h"

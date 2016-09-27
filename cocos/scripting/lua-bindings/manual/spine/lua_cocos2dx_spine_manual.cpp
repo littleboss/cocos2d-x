@@ -1,5 +1,5 @@
 /****************************************************************************
- Copyright (c) 2013-2014 Chukong Technologies Inc.
+ Copyright (c) 2013-2016 Chukong Technologies Inc.
  
  http://www.cocos2d-x.org
  
@@ -23,7 +23,7 @@
  ****************************************************************************/
 #include "scripting/lua-bindings/manual/spine/lua_cocos2dx_spine_manual.hpp"
 #include "scripting/lua-bindings/auto/lua_cocos2dx_spine_auto.hpp"
-#include "cocos2d.h"
+
 #include "scripting/lua-bindings/manual/tolua_fix.h"
 #include "scripting/lua-bindings/manual/LuaBasicConversions.h"
 #include "scripting/lua-bindings/manual/cocos2d/LuaScriptHandlerMgr.h"
@@ -105,7 +105,7 @@ static int lua_cocos2dx_CCSkeletonAnimation_createWithFile(lua_State* L)
         }
 #endif
         const char* skeletonDataFile = tolua_tostring(L, 2, "");
-        const char* atlasFile = tolua_tostring(L, 3, "");;
+        const char* atlasFile = tolua_tostring(L, 3, "");
         
         auto tolua_ret = LuaSkeletonAnimation::createWithFile(skeletonDataFile, atlasFile);
         

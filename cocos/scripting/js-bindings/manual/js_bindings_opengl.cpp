@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2014 Chukong Technologies Inc.
+ * Copyright (c) 2013-2016 Chukong Technologies Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,6 +21,9 @@
  */
 
 #include "scripting/js-bindings/manual/js_bindings_opengl.h"
+
+#include "base/CCDirector.h"
+#include "renderer/CCRenderer.h"
 
 NS_CC_BEGIN
 
@@ -143,7 +146,7 @@ void js_register_cocos2dx_GLNode(JSContext *cx, JS::HandleObject global) {
         JS_FN("create", js_cocos2dx_GLNode_create, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FS_END
     };
-    
+
     JS::RootedObject parentProto(cx, jsb_cocos2d_Node_prototype);
     js_cocos2dx_GLNode_prototype = JS_InitClass(
         cx, global,
@@ -154,7 +157,7 @@ void js_register_cocos2dx_GLNode(JSContext *cx, JS::HandleObject global) {
         funcs,
         NULL, // no static properties
         st_funcs);
-    
+
     // add the proto and JSClass to the type->js info hash table
     JS::RootedObject proto(cx, js_cocos2dx_GLNode_prototype);
     jsb_register_class<cocos2d::GLNode>(cx, js_cocos2dx_GLNode_class, proto, parentProto);

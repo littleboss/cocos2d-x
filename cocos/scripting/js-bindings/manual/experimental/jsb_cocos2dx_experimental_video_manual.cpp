@@ -5,7 +5,7 @@
 #include "ui/UIVideoPlayer.h"
 #include "scripting/js-bindings/manual/ScriptingCore.h"
 #include "scripting/js-bindings/manual/cocos2d_specifics.hpp"
-#include "cocos2d.h"
+
 
 using namespace cocos2d;
 
@@ -34,6 +34,9 @@ static bool jsb_cocos2dx_experimental_ui_VideoPlayer_addEventListener(JSContext 
         });
         return true;
     }
+
+    JS_ReportError(cx, "jsb_cocos2dx_experimental_ui_VideoPlayer_addEventListener : wrong number of arguments: %d, was expecting %d", argc, 1);
+    return false;
 }
 
 extern JSObject* jsb_cocos2d_experimental_ui_VideoPlayer_prototype;

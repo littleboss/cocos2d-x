@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2013 Zynga Inc.
- * Copyright (c) 2013-2014 Chukong Technologies Inc.
+ * Copyright (c) 2013-2016 Chukong Technologies Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -380,7 +380,7 @@ bool JSB_glGetSupportedExtensions(JSContext *cx, uint32_t argc, jsval *vp)
     GLubyte* copy = new (std::nothrow) GLubyte[len+1];
     strncpy((char*)copy, (const char*)extensions, len );
 
-    int start_extension=0;
+    size_t start_extension = 0;
     int element=0;
     for( size_t i=0; i<len+1; i++) {
         if( copy[i]==' ' || copy[i]==',' || i==len ) {
@@ -519,7 +519,7 @@ bool JSB_glGetUniformfv(JSContext *cx, uint32_t argc, jsval *vp)
     JSObject *typedArray = NULL;
     if( utype == GL_FLOAT) {
         // FIXME: glew on windows will cause array overflow after invoking glGetUniformfv.
-        // It seems that glGetUniformfv re-assign the memeroy with a wrong size which is 4x than we pass in.
+        // It seems that glGetUniformfv re-assign the memory with a wrong size which is 4x than we pass in.
         // For temporary solution, we allocate 4x array. 
         GLfloat* param = new (std::nothrow) GLfloat[usize*4];
         glGetUniformfv(arg0, arg1, param);
@@ -530,7 +530,7 @@ bool JSB_glGetUniformfv(JSContext *cx, uint32_t argc, jsval *vp)
         CC_SAFE_DELETE_ARRAY(param);
     } else if( utype == GL_INT ) {
         // FIXME: glew on windows will cause array overflow after invoking glGetUniformfv.
-        // It seems that glGetUniformfv re-assign the memeroy with a wrong size which is 4x than we pass in.
+        // It seems that glGetUniformfv re-assign the memory with a wrong size which is 4x than we pass in.
         // For temporary solution, we allocate 4x array. 
         GLint* param = new (std::nothrow) GLint[usize*4];
         glGetUniformiv(arg0, arg1, param);

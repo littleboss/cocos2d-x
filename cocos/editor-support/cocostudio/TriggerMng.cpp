@@ -1,5 +1,5 @@
 /****************************************************************************
-Copyright (c) 2013-2014 Chukong Technologies Inc.
+Copyright (c) 2013-2016 Chukong Technologies Inc.
 
 http://www.cocos2d-x.org
 
@@ -26,6 +26,10 @@ THE SOFTWARE.
 #include "json/filestream.h"
 #include "json/prettywriter.h"
 #include "json/stringbuffer.h"
+#include "base/CCDirector.h"
+#include "base/CCEventDispatcher.h"
+#include "base/ccUtils.h"
+#include "base/CCEventCustom.h"
 
 using namespace cocos2d;
 

@@ -25,29 +25,53 @@
 #define __JS_COCOS2D_X_SPECIFICS_H__
 
 #include "scripting/js-bindings/manual/ScriptingCore.h"
+
+#include "2d/CCScene.h"
+#include "2d/CCSprite.h"
+#include "base/CCEventListenerTouch.h"
+#include "base/CCRef.h"
+#include "base/uthash.h"
 #include "platform/CCSAXParser.h"
 
 class JSScheduleWrapper;
+
+namespace JSBinding
+{
+    typedef cocos2d::Vector<cocos2d::Ref*> Array;
+    typedef cocos2d::Map<std::string, cocos2d::Ref*> Dictionary;
+
+    class DictionaryRef : public cocos2d::Ref
+    {
+    public:
+        Dictionary data;
+    };
+
+    class ArrayRef : public cocos2d::Ref
+    {
+    public:
+        Array data;
+    };
+}
 
 // JSScheduleWrapper* --> Array* since one js function may correspond to many targets.
 // To debug this, you could refer to JSScheduleWrapper::dump function.
 // It will prove that i'm right. :)
 typedef struct jsScheduleFunc_proxy {
     JSObject* jsfuncObj;
-    cocos2d::__Array*  targets;
+    JSBinding::Array* targets;
     UT_hash_handle hh;
 } schedFunc_proxy_t;
 
 typedef struct jsScheduleTarget_proxy {
     JSObject* jsTargetObj;
-    cocos2d::__Array*  targets;
+    JSBinding::Array* targets;
     UT_hash_handle hh;
 } schedTarget_proxy_t;
 
 
 typedef struct jsCallFuncTarget_proxy {
     void * ptr;
-    cocos2d::__Array *obj;
+    JSBinding::Array* obj;
     UT_hash_handle hh;
 } callfuncTarget_proxy_t;
 
@@ -125,7 +149,6 @@ void js_remove_object_reference(JS::HandleValue owner, JS::HandleValue target);
 void js_add_object_root(JS::HandleValue target);
 void js_remove_object_root(JS::HandleValue target);
 
-
 JS::Value anonEvaluate(JSContext *cx, JS::HandleObject thisObj, const char* string);
 void register_cocos2dx_js_core(JSContext* cx, JS::HandleObject obj);
 
@@ -138,7 +161,7 @@ public:
     void setJSCallbackFunc(JS::HandleValue callback);
     void setJSCallbackThis(JS::HandleValue thisObj);
     void setJSExtraData(JS::HandleValue data);
-    
+
     const jsval getJSCallbackFunc() const;
     const jsval getJSCallbackThis() const;
     const jsval getJSExtraData() const;
@@ -151,43 +174,43 @@ protected:
 
 
 class JSScheduleWrapper: public JSCallbackWrapper {
-    
+
 public:
     JSScheduleWrapper();
     JSScheduleWrapper(JS::HandleValue owner);
 
     static void setTargetForSchedule(JS::HandleValue sched, JSScheduleWrapper *target);
-    static cocos2d::__Array * getTargetForSchedule(JS::HandleValue sched);
+    static JSBinding::Array* getTargetForSchedule(JS::HandleValue sched);
     static void setTargetForJSObject(JS::HandleObject jsTargetObj, JSScheduleWrapper *target);
-    static cocos2d::__Array * getTargetForJSObject(JS::HandleObject jsTargetObj);
-    
+    static JSBinding::Array* getTargetForJSObject(JS::HandleObject jsTargetObj);
+
     // Remove all targets.
     static void removeAllTargets();
     // Remove all targets for priority.
     static void removeAllTargetsForMinPriority(int minPriority);
-    // Remove all targets by js object from hash table(_schedFunc_target_ht and _schedObj_target_ht).   
+    // Remove all targets by js object from hash table(_schedFunc_target_ht and _schedObj_target_ht).
     static void removeAllTargetsForJSObject(JS::HandleObject jsTargetObj);
     // Remove the target by js object and the wrapper for native schedule.
     static void removeTargetForJSObject(JS::HandleObject jsTargetObj, JSScheduleWrapper* target);
     static void dump();
 
     void pause();
-    
+
     void scheduleFunc(float dt);
     void update(float dt);
-    
+
     Ref* getTarget();
     void setTarget(Ref* pTarget);
-    
+
     void setPureJSTarget(JS::HandleObject jstarget);
     JSObject* getPureJSTarget();
-    
+
     void setPriority(int priority);
     int  getPriority();
-    
+
     void setUpdateSchedule(bool isUpdateSchedule);
     bool isUpdateSchedule();
-    
+
 protected:
     Ref* _pTarget;
     JS::Heap<JSObject*> _pPureJSTarget;
@@ -201,7 +224,7 @@ class JSTouchDelegate: public cocos2d::Ref
 public:
     JSTouchDelegate();
     ~JSTouchDelegate();
-    
+
     // Set the touch delegate to map by using the key (pJSObj).
     static void setDelegateForJSObject(JSObject* pJSObj, JSTouchDelegate* pDelegate);
     // Get the touch delegate by the key (pJSObj).
@@ -221,7 +244,7 @@ public:
     void onTouchMoved(cocos2d::Touch *touch, cocos2d::Event *event);
     void onTouchEnded(cocos2d::Touch *touch, cocos2d::Event *event);
     void onTouchCancelled(cocos2d::Touch *touch, cocos2d::Event *event);
-    
+
     // optional
     void onTouchesBegan(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *event);
     void onTouchesMoved(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *event);
@@ -248,18 +271,18 @@ public:
         }
         return pInstance;
     };
-    
+
     ~__JSPlistDelegator();
-    
+
     cocos2d::SAXParser* getParser();
-    
+
     std::string parse(const std::string& path);
     std::string parseText(const std::string& text);
-    
+
     // implement pure virtual methods of SAXDelegator
-    void startElement(void *ctx, const char *name, const char **atts);
-    void endElement(void *ctx, const char *name);
-    void textHandler(void *ctx, const char *ch, int len);
+    void startElement(void *ctx, const char *name, const char **atts) override;
+    void endElement(void *ctx, const char *name) override;
+    void textHandler(void *ctx, const char *ch, size_t len) override;
 
 private:
     cocos2d::SAXParser _parser;

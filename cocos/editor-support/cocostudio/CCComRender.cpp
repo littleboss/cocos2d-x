@@ -1,5 +1,5 @@
 /****************************************************************************
-Copyright (c) 2013-2014 Chukong Technologies Inc.
+Copyright (c) 2013-2016 Chukong Technologies Inc.
 
 http://www.cocos2d-x.org
 
@@ -24,6 +24,11 @@ THE SOFTWARE.
 
 #include "editor-support/cocostudio/CCComRender.h"
 #include "editor-support/cocostudio/CocoStudio.h"
+
+#include "platform/CCFileUtils.h"
+#include "2d/CCTMXTiledMap.h"
+#include "2d/CCParticleSystemQuad.h"
+#include "2d/CCSpriteFrameCache.h"
 
 using namespace cocos2d;
 

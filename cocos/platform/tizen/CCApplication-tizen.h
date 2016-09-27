@@ -33,15 +33,6 @@
 #include <string>
 
 #include <Elementary.h>
-#include <Elementary_GL_Helpers.h>
-#include <efl_extension.h>
-#include <Evas_GL.h>
-
-#include <app.h>
-
-struct _Evas_GL;
-struct _Evas_GL_Context;
-struct _Evas_GL_Surface;
 
 NS_CC_BEGIN
 class Rect;
@@ -71,7 +62,7 @@ public:
     int run();
 
     /**
-     @brief Get current applicaiton instance.
+     @brief Get current application instance.
      @return Current application instance pointer.
      */
     static Application* getInstance();
@@ -121,9 +112,10 @@ public:
     Evas_Object * _win;
     Evas_Object * _conform;
 
-    _Evas_GL * _evasGL;
-    _Evas_GL_Context * _ctx;
-    _Evas_GL_Surface * _sfc;
+    Evas_GL * _evasGL;
+    Evas_GL_Context * _ctx;
+    Evas_GL_Surface * _sfc;
+    Ecore_Animator * _ani;
 
     int _orientation;
     int _argc;

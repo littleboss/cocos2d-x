@@ -1,5 +1,5 @@
 /****************************************************************************
-Copyright (c) 2013-2014 Chukong Technologies Inc.
+Copyright (c) 2013-2016 Chukong Technologies Inc.
 
 http://www.cocos2d-x.org
 
@@ -494,7 +494,7 @@ const Rect& Layout::getClippingRect()
             float bottomOffset = worldPos.y - parentClippingRect.origin.y;
             if (bottomOffset < 0.0f)
             {
-                finalY = parentClippingRect.origin.x;
+                finalY = parentClippingRect.origin.y;
                 finalHeight += bottomOffset;
             }
             if (finalWidth < 0.0f)

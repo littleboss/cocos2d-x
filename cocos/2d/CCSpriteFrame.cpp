@@ -2,7 +2,7 @@
 Copyright (c) 2008-2011 Ricardo Quesada
 Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2011      Zynga Inc.
-Copyright (c) 2013-2014 Chukong Technologies Inc.
+Copyright (c) 2013-2016 Chukong Technologies Inc.
 
 http://www.cocos2d-x.org
 
@@ -137,6 +137,7 @@ SpriteFrame* SpriteFrame::clone() const
     SpriteFrame *copy = new (std::nothrow) SpriteFrame();
     copy->initWithTextureFilename(_textureFilename, _rectInPixels, _rotated, _offsetInPixels, _originalSizeInPixels);
     copy->setTexture(_texture);
+    copy->setPolygonInfo(_polygonInfo);
     copy->autorelease();
     return copy;
 }
@@ -187,7 +188,7 @@ void SpriteFrame::setAnchorPoint(const Vec2& anchorPoint)
 
 bool SpriteFrame::hasAnchorPoint() const
 {
-    return !isnan(_anchorPoint.x);
+    return !std::isnan(_anchorPoint.x);
 }
 
 void SpriteFrame::setTexture(Texture2D * texture)
@@ -217,7 +218,7 @@ void SpriteFrame::setPolygonInfo(const PolygonInfo &polygonInfo)
     _polygonInfo = polygonInfo;
 }
 
-const PolygonInfo &SpriteFrame::getPolygonInfo() const
+const PolygonInfo& SpriteFrame::getPolygonInfo() const
 {
     return _polygonInfo;
 }
