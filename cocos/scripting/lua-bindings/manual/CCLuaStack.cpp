@@ -415,6 +415,19 @@ bool LuaStack::pushFunctionByHandler(int nHandler)
     return true;
 }
 
+int LuaStack::beginCallFunction(const char* functionName)
+{
+    lua_getglobal(_state, functionName);       /* query function by name, stack: function */
+    if (!lua_isfunction(_state, -1))
+    {
+        CCLOG("[LUA ERROR] name '%s' does not represent a Lua function", functionName);
+        lua_pop(_state, 1);
+        return 0;
+    }
+    
+    return 1;
+}
+
 int LuaStack::executeFunction(int numArgs)
 {
     int functionIndex = -(numArgs + 1);
