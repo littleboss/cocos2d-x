@@ -755,6 +755,29 @@ void LuaStack::cleanupXXTEAKeyAndSign()
     }
 }
 
+unsigned char* LuaStack::xxteaDecrypt(unsigned char *buffer, ssize_t size, ssize_t *outlen)
+{
+    xxtea_long len = 0;
+    unsigned char *outbuffer = xxtea_decrypt(buffer + _xxteaSignLen,
+                                             (xxtea_long)size - (xxtea_long)_xxteaSignLen,
+                                             (unsigned char*)_xxteaKey,
+                                             (xxtea_long)_xxteaKeyLen,
+                                             &len);
+    *outlen = len;
+    return outbuffer;
+}
+
+bool LuaStack::isXXTEA(unsigned char *data, ssize_t size)
+{
+    bool bXXTEA = _xxteaEnabled && data;
+    for (unsigned int i = 0; bXXTEA && i < _xxteaSignLen && i < size; ++i)
+    {
+        bXXTEA = data[i] == _xxteaSign[i];
+    }
+    
+    return bXXTEA;
+}
+
 int LuaStack::loadChunksFromZIP(const char *zipFilePath)
 {
     pushString(zipFilePath);

@@ -300,6 +300,19 @@ FileUtils::Status FileUtilsAndroid::getContents(const std::string& filename, Res
         return FileUtils::Status::ReadFailed;
     }
 
+    unsigned char* content = (unsigned char*)buffer->buffer();
+    LuaStack* stack = LuaEngine::getInstance()->getLuaStack();
+    if (stack->isXXTEA(content, readsize)) {
+        ssize_t len = 0;
+        unsigned char* xxteaBuffer = stack->xxteaDecrypt(content, readsize, &len);
+        
+        buffer->resize(len);
+        memcpy(buffer->buffer(), xxteaBuffer, len);
+        
+        free(xxteaBuffer);
+        xxteaBuffer = nullptr;
+    }
+
     return FileUtils::Status::OK;
 }
 

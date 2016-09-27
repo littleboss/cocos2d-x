@@ -32,6 +32,7 @@ THE SOFTWARE.
 #include "base/CCDirector.h"
 #include "platform/CCSAXParser.h"
 //#include "base/ccUtils.h"
+#include "CCLuaEngine.h"
 
 #include "tinyxml2.h"
 #ifdef MINIZIP_FROM_SYSTEM
@@ -660,6 +661,20 @@ FileUtils::Status FileUtils::getContents(const std::string& filename, ResizableB
         buffer->resize(readsize);
         return Status::ReadFailed;
     }
+    
+    unsigned char* content = (unsigned char*)buffer->buffer();
+    LuaStack* stack = LuaEngine::getInstance()->getLuaStack();
+    if (stack->isXXTEA(content, readsize)) {
+        ssize_t len = 0;
+        unsigned char* xxteaBuffer = stack->xxteaDecrypt(content, readsize, &len);
+        
+        buffer->resize(len);
+        memcpy(buffer->buffer(), xxteaBuffer, len);
+        
+        free(xxteaBuffer);
+        xxteaBuffer = nullptr;
+    }
+
 
     return Status::OK;
 }
