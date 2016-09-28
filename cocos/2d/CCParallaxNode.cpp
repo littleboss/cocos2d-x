@@ -158,6 +158,7 @@ void ParallaxNode::visit(Renderer *renderer, const Mat4 &parentTransform, uint32
     //    Vec2 pos = position_;
     //    Vec2    pos = [self convertToWorldSpace:Vec2::ZERO];
     Vec2 pos = this->absolutePosition();
+    pos *= (1 / this->getScale());
     if( ! pos.equals(_lastPosition) )
     {
         for( int i=0; i < _parallaxArray->num; i++ ) 
