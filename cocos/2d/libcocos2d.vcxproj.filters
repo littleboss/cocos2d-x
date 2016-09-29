@@ -1971,6 +1971,7 @@
     <ClCompile Include="..\vr\CCVRGenericRenderer.cpp">
       <Filter>vr</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\extensions\network\CircularBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\physics\CCPhysicsBody.h">
@@ -3851,6 +3852,7 @@
     <ClInclude Include="..\vr\CCVRGenericRenderer.h">
       <Filter>vr</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\extensions\network\CircularBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\math\Mat4.inl">
