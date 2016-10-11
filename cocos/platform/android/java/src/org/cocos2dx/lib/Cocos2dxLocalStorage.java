@@ -25,9 +25,11 @@ package org.cocos2dx.lib;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
+//import android.database.sqlite.SQLiteDatabase;
+//import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+import net.sqlcipher.database.SQLiteDatabase;
+import net.sqlcipher.database.SQLiteOpenHelper;
 
 
 public class Cocos2dxLocalStorage {
@@ -50,7 +52,9 @@ public class Cocos2dxLocalStorage {
             DATABASE_NAME = dbName;
             TABLE_NAME = tableName;
             mDatabaseOpenHelper = new DBOpenHelper(Cocos2dxActivity.getContext());
-            mDatabase = mDatabaseOpenHelper.getWritableDatabase();
+            
+            String password = "dakfasfq837892jsajd";
+            mDatabase = mDatabaseOpenHelper.getWritableDatabase(password);
             return true;
         }
         return false;
