@@ -67,6 +67,11 @@ void localStorageInit( const std::string& fullpath/* = "" */)
             ret = sqlite3_open(":memory:", &_db);
         else
             ret = sqlite3_open(fullpath.c_str(), &_db);
+        
+#if (CC_TARGET_PLATFORM != CC_PLATFORM_WIN32)
+        const char* key = "dakfasfq837892jsajd";
+        sqlite3_key(_db, key, (int)strlen(key));
+#endif
 
         localStorageCreateTable();
 
