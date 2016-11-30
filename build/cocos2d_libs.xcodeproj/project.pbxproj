@@ -4023,6 +4023,7 @@
 		5E9F612B1A3FFE3D0038DE01 /* CCPlane.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E9F61241A3FFE3D0038DE01 /* CCPlane.cpp */; };
 		5E9F612C1A3FFE3D0038DE01 /* CCPlane.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E9F61251A3FFE3D0038DE01 /* CCPlane.h */; };
 		5E9F612D1A3FFE3D0038DE01 /* CCPlane.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E9F61251A3FFE3D0038DE01 /* CCPlane.h */; };
+		7F0DFEB81DEEB28E0061008D /* CircularBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3A0490E41CE075960077A728 /* CircularBuffer.cpp */; };
 		826294331AAF001C00CB7CF7 /* HttpAsynConnection-apple.m in Sources */ = {isa = PBXBuildFile; fileRef = 52B47A2A1A5349A3004E4C60 /* HttpAsynConnection-apple.m */; };
 		826294341AAF003E00CB7CF7 /* HttpClient-apple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 52B47A2B1A5349A3004E4C60 /* HttpClient-apple.mm */; };
 		826294351AAF004C00CB7CF7 /* HttpCookie.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52B47A2C1A5349A3004E4C60 /* HttpCookie.cpp */; };
@@ -16326,6 +16327,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7F0DFEB81DEEB28E0061008D /* CircularBuffer.cpp in Sources */,
 				C5F5161F1C822D6D0013B695 /* UITabControl.cpp in Sources */,
 				C5F5161D1C822D400013B695 /* TabControlReader.cpp in Sources */,
 				D0FD03541A3B51AA00825BB5 /* CCAllocatorGlobalNewDelete.cpp in Sources */,
@@ -17218,7 +17220,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
-				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/.. $(SRCROOT)/../cocos $(SRCROOT)/../cocos/editor-support $(SRCROOT)/../external/chipmunk/include $(SRCROOT)/../external $(SRCROOT)/../extensions $(SRCROOT)/../external/poly2tri $(SRCROOT)/../external/poly2tri/common $(SRCROOT)/../external/poly2tri/sweep $(SRCROOT)/../../../packages/sqlcipher";
+				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/.. $(SRCROOT)/../cocos $(SRCROOT)/../cocos/editor-support $(SRCROOT)/../cocos/scripting/lua-bindings/manual $(SRCROOT)/../external/chipmunk/include $(SRCROOT)/../external $(SRCROOT)/../external/lua/tolua $(SRCROOT)/../external/lua/lua $(SRCROOT)/../extensions $(SRCROOT)/../external/poly2tri $(SRCROOT)/../external/poly2tri/common $(SRCROOT)/../external/poly2tri/sweep $(SRCROOT)/../../../packages/sqlcipher";
 			};
 			name = Debug;
 		};
@@ -17252,7 +17254,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
-				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/.. $(SRCROOT)/../cocos $(SRCROOT)/../cocos/editor-support $(SRCROOT)/../external/chipmunk/include $(SRCROOT)/../external $(SRCROOT)/../extensions $(SRCROOT)/../external/poly2tri $(SRCROOT)/../external/poly2tri/common $(SRCROOT)/../external/poly2tri/sweep $(SRCROOT)/../../../packages/sqlcipher";
+				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/.. $(SRCROOT)/../cocos $(SRCROOT)/../cocos/editor-support $(SRCROOT)/../cocos/scripting/lua-bindings/manual $(SRCROOT)/../external/chipmunk/include $(SRCROOT)/../external $(SRCROOT)/../external/lua/tolua $(SRCROOT)/../external/lua/lua $(SRCROOT)/../extensions $(SRCROOT)/../external/poly2tri $(SRCROOT)/../external/poly2tri/common $(SRCROOT)/../external/poly2tri/sweep $(SRCROOT)/../../../packages/sqlcipher";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
