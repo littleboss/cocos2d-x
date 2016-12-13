@@ -27,6 +27,10 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.opengl.GLSurfaceView;
+
+import com.pgyersdk.feedback.PgyFeedbackShakeManager;
+import com.pgyersdk.utils.GLSurfaceUtils;
+
 public class Cocos2dxRenderer implements GLSurfaceView.Renderer {
     // ===========================================================
     // Constants
@@ -108,6 +112,9 @@ public class Cocos2dxRenderer implements GLSurfaceView.Renderer {
             this.mLastTickInNanoSeconds = System.nanoTime();
             Cocos2dxRenderer.nativeRender();
         }
+
+        PgyFeedbackShakeManager.setGLSurface(true);
+        GLSurfaceUtils.getInstance().takeScreenShot(gl);
     }
 
     // ===========================================================
