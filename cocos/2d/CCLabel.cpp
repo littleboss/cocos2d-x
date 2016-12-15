@@ -474,7 +474,7 @@ void Label::reset()
     _outlineSize = 0.f;
     _bmFontPath = "";
     _systemFontDirty = false;
-    _systemFont = "font/LiHei Pro.ttf";
+    _systemFont = "font/DFGB_H5.TTF";
     _systemFontSize = 12;
 
     if (_horizontalKernings)
