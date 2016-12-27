@@ -67,7 +67,7 @@ void _spAtlasPage_createTexture (spAtlasPage* self, const char* path) {
 
 	Texture2D::TexParams textureParams = {filter(self->minFilter), filter(self->magFilter), wrap(self->uWrap), wrap(self->vWrap)};
 	texture->setTexParameters(textureParams);
-    if (self->minFilter >= SP_ATLAS_MIPMAP || self->magFilter >= SP_ATLAS_MIPMAP) {
+    if (self->minFilter >= SP_ATLAS_MIPMAP) {
         texture->generateMipmap();
     }
 
