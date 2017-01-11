@@ -27,5 +27,4 @@ android {
 
 dependencies {
     compile fileTree(dir: '../java/libs', include: ['*.jar'])
-    compile 'com.pgyersdk:sdk:2.4.0'
 }
