@@ -120,8 +120,7 @@ bool ScrollView::initWithViewSize(Size size, Node *container/* = nullptr*/)
 
         setTouchEnabled(true);
         
-        // _touches.reserve(EventTouch::MAX_TOUCHES);
-        _touches.reserve(2);
+        _touches.reserve(EventTouch::MAX_TOUCHES);
         
         _delegate = nullptr;
         _bounceable = true;
