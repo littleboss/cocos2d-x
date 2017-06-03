@@ -30,7 +30,7 @@ NS_CC_BEGIN
 EventTouch::EventTouch()
 : Event(Type::TOUCH)
 {
-    _touches.reserve(MAX_TOUCHES);
+    _touches.reserve(MAX_TOUCHES - 1);
 }
 
 NS_CC_END
