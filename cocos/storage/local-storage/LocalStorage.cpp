@@ -57,7 +57,7 @@ static void localStorageCreateTable()
         printf("Error in CREATE TABLE\n");
 }
 
-void localStorageInit( const std::string& fullpath/* = "" */)
+void localStorageInit( const std::string& key, const std::string& fullpath/* = "" */)
 {
     if (!_initialized) {
 
@@ -69,8 +69,7 @@ void localStorageInit( const std::string& fullpath/* = "" */)
             ret = sqlite3_open(fullpath.c_str(), &_db);
         
 #if (CC_TARGET_PLATFORM != CC_PLATFORM_WIN32)
-        const char* key = "dakfasfq837892jsajd";
-        sqlite3_key(_db, key, (int)strlen(key));
+        sqlite3_key(_db, key.c_str(), (int)key.length());
 #endif
 
         localStorageCreateTable();
