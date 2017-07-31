@@ -1,6 +1,5 @@
 /****************************************************************************
-Copyright (c) 2010-2012 cocos2d-x.org
-Copyright (c) 2013-2017 Chukong Technologies Inc.
+Copyright (c) 2017 Chukong Technologies Inc.
 
 http://www.cocos2d-x.org
 
@@ -22,15 +21,25 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-#ifndef __CCDANDROIDUTILS_H__
-#define __CCDANDROIDUTILS_H__
 
-#include <string>
+#pragma once
 
-namespace CocosDenshion {
-    namespace android {
-        std::string getFullPathWithoutAssetsPrefix(const char* pszFilename);
-    }
-}
+#include "audio/android/AudioDecoder.h"
 
-#endif //__CCDANDROIDUTILS_H__
+#include "tremolo/Tremolo/ivorbisfile.h"
+
+namespace cocos2d { namespace experimental {
+
+class AudioDecoderOgg : public AudioDecoder
+{
+protected:
+    AudioDecoderOgg();
+    virtual ~AudioDecoderOgg();
+
+    static int fseek64Wrap(void* datasource, ogg_int64_t off, int whence);
+    virtual bool decodeToPcm() override;
+
+    friend class AudioDecoderProvider;
+};
+
+}} // namespace cocos2d { namespace experimental {

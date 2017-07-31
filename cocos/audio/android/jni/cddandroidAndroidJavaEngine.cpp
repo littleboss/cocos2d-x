@@ -1,6 +1,6 @@
 /****************************************************************************
 Copyright (c) 2010-2012 cocos2d-x.org
-Copyright (c) 2013-2015 Chukong Technologies Inc.
+Copyright (c) 2013-2017 Chukong Technologies Inc.
 
 http://www.cocos2d-x.org
 
@@ -23,42 +23,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 
+#define  LOG_TAG    "cocosdenshion::android::AndroidJavaEngine"
+
 #include "audio/android/jni/cddandroidAndroidJavaEngine.h"
 #include <stdlib.h>
-#include <android/log.h>
-#include <dlfcn.h>
-#include <jni.h>
+
 #include <sys/system_properties.h>
 #include "audio/android/ccdandroidUtils.h"
+#include "audio/android/utils/Utils.h"
 #include "audio/include/AudioEngine.h"
 #include "platform/android/jni/JniHelper.h"
 
 // logging
-#define  LOG_TAG    "cocosdenshion::android::AndroidJavaEngine"
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,LOG_TAG,__VA_ARGS__)
-
-#if (__ANDROID_API__ >= 21)
-// Android 'L' makes __system_property_get a non-global symbol.
-// Here we provide a stub which loads the symbol from libc via dlsym.
-typedef int (*PFN_SYSTEM_PROP_GET)(const char *, char *);
-int __system_property_get(const char* name, char* value)
-{
-    static PFN_SYSTEM_PROP_GET __real_system_property_get = NULL;
-    if (!__real_system_property_get) {
-        // libc.so should already be open, get a handle to it.
-        void *handle = dlopen("libc.so", RTLD_NOLOAD);
-        if (!handle) {
-            __android_log_print(ANDROID_LOG_ERROR, "foobar", "Cannot dlopen libc.so: %s.\n", dlerror());
-        } else {
-            __real_system_property_get = (PFN_SYSTEM_PROP_GET)dlsym(handle, "__system_property_get");
-        }
-        if (!__real_system_property_get) {
-            __android_log_print(ANDROID_LOG_ERROR, "foobar", "Cannot resolve __system_property_get(): %s.\n", dlerror());
-        }
-    }
-    return (*__real_system_property_get)(name, value);
-} 
-#endif // __ANDROID_API__ >= 21
 
 // Java class
 static const std::string helperClassName = "org/cocos2dx/lib/Cocos2dxHelper";
@@ -71,20 +48,18 @@ AndroidJavaEngine::AndroidJavaEngine()
     : _implementBaseOnAudioEngine(false)
     , _effectVolume(1.f)
 {
-    char sdk_ver_str[PROP_VALUE_MAX] = "0";
-    auto len = __system_property_get("ro.build.version.sdk", sdk_ver_str);
-    if (len > 0)
+    int sdkVer = getSDKVersion();
+    if (sdkVer > 0)
     {
-        auto sdk_ver = atoi(sdk_ver_str);
-        __android_log_print(ANDROID_LOG_DEBUG, "cocos2d", "android build version:%d", sdk_ver);
-        if (sdk_ver == 21)
+        __android_log_print(ANDROID_LOG_DEBUG, "cocos2d", "android SDK version:%d", sdkVer);
+        if (sdkVer == 21)
         {
             _implementBaseOnAudioEngine = true;
         }
     }
     else
     {
-        __android_log_print(ANDROID_LOG_DEBUG, "cocos2d", "%s", "Fail to get android build version.");
+        __android_log_print(ANDROID_LOG_DEBUG, "cocos2d", "%s", "Fail to get android SDK version.");
     }
 }
 
@@ -126,7 +101,7 @@ void AndroidJavaEngine::rewindBackgroundMusic() {
 }
 
 bool AndroidJavaEngine::willPlayBackgroundMusic() {
-    return true;
+    return JniHelper::callStaticBooleanMethod(helperClassName, "willPlayBackgroundMusic");
 }
 
 bool AndroidJavaEngine::isBackgroundMusicPlaying() {
@@ -296,6 +271,10 @@ void AndroidJavaEngine::preloadEffect(const char* filePath)
         std::string fullPath = CocosDenshion::android::getFullPathWithoutAssetsPrefix(filePath);
         JniHelper::callStaticVoidMethod(helperClassName, "preloadEffect", fullPath);
     }
+    else
+    {
+        AudioEngine::preload(filePath);
+    }
 }
 
 void AndroidJavaEngine::unloadEffect(const char* filePath)
@@ -304,5 +283,9 @@ void AndroidJavaEngine::unloadEffect(const char* filePath)
     {
         std::string fullPath = CocosDenshion::android::getFullPathWithoutAssetsPrefix(filePath);
         JniHelper::callStaticVoidMethod(helperClassName, "unloadEffect", fullPath);
+    }
+    else
+    {
+        AudioEngine::uncache(filePath);
     }
 }

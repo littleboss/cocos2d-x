@@ -1,6 +1,5 @@
 /****************************************************************************
-Copyright (c) 2010-2012 cocos2d-x.org
-Copyright (c) 2013-2017 Chukong Technologies Inc.
+Copyright (c) 2017 Chukong Technologies Inc.
 
 http://www.cocos2d-x.org
 
@@ -22,15 +21,20 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-#ifndef __CCDANDROIDUTILS_H__
-#define __CCDANDROIDUTILS_H__
 
-#include <string>
+#pragma once
 
-namespace CocosDenshion {
-    namespace android {
-        std::string getFullPathWithoutAssetsPrefix(const char* pszFilename);
-    }
-}
+#include "audio/android/OpenSLHelper.h"
 
-#endif //__CCDANDROIDUTILS_H__
+namespace cocos2d { namespace experimental {
+
+class AudioDecoder;
+
+class AudioDecoderProvider
+{
+public:
+    static AudioDecoder* createAudioDecoder(SLEngineItf engineItf, const std::string &url, int bufferSizeInFrames, int sampleRate, const FdGetterCallback &fdGetterCallback);
+    static void destroyAudioDecoder(AudioDecoder** decoder);
+};
+
+}} // namespace cocos2d { namespace experimental {
