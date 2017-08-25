@@ -168,7 +168,7 @@ IAudioPlayer *AudioPlayerProvider::getAudioPlayer(const std::string &audioFilePa
                     std::unique_lock<std::mutex> lk(_preloadWaitMutex);
                     // Wait for 2 seconds for the decoding in sub thread finishes.
                     ALOGV("FileInfo (%p), Waiting preload (%s) to finish ...", &info, audioFilePath.c_str());
-                    _preloadWaitCond.wait_for(lk, std::chrono::seconds(5));
+                    _preloadWaitCond.wait_for(lk, std::chrono::seconds(10));
                     ALOGV("FileInfo (%p), Waitup preload (%s) ...", &info, audioFilePath.c_str());
                 }
 
