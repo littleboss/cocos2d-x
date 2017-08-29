@@ -2,6 +2,7 @@ package org.cocos2dx.lib;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 import android.view.Gravity;
 import android.webkit.WebChromeClient;
@@ -56,6 +57,11 @@ public class Cocos2dxWebView extends WebView {
 
         this.getSettings().setDomStorageEnabled(true);
         this.getSettings().setJavaScriptEnabled(true);
+
+        if(Build.VERSION.SDK_INT >= 11){
+            this.setLayerType(this.LAYER_TYPE_SOFTWARE, null);
+            this.setBackgroundColor(0);
+        }
 
         // `searchBoxJavaBridge_` has big security risk. http://jvn.jp/en/jp/JVN53768697
         try {
