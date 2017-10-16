@@ -61,9 +61,9 @@ class CC_DLL CircularBuffer
 		inline size_t GetSpaceAfterA() { return (m_bufferEnd - m_regionAPointer - m_regionASize); }
 		inline size_t GetBFreeSpace() { if(m_regionBPointer == NULL) { return 0; } return (m_regionAPointer - m_regionBPointer - m_regionBSize); }
 
-    	const static int RECV_BUFFER_SIZE = 64 * 1024;
+    	const static int RECV_BUFFER_SIZE = 64 * 1024 * 10;
 	public:
-        static CircularBuffer* create();
+        static CircularBuffer* create(size_t size = RECV_BUFFER_SIZE);
         void clear();
 
 		/** Read bytes from the buffer

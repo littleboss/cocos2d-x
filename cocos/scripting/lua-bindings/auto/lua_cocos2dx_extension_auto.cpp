@@ -16702,6 +16702,19 @@ int lua_cocos2dx_extension_CircularBuffer_create(lua_State* tolua_S)
         object_to_luaval<cocos2d::extension::CircularBuffer>(tolua_S, "cc.CircularBuffer",(cocos2d::extension::CircularBuffer*)ret);
         return 1;
     }
+    if (argc == 1)
+    {
+        unsigned long arg0;
+        ok &= luaval_to_ulong(tolua_S, 2, &arg0, "cc.CircularBuffer:create");
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_extension_CircularBuffer_create'", nullptr);
+            return 0;
+        }
+        cocos2d::extension::CircularBuffer* ret = cocos2d::extension::CircularBuffer::create(arg0);
+        object_to_luaval<cocos2d::extension::CircularBuffer>(tolua_S, "cc.CircularBuffer",(cocos2d::extension::CircularBuffer*)ret);
+        return 1;
+    }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "cc.CircularBuffer:create",argc, 0);
     return 0;
 #if COCOS2D_DEBUG >= 1

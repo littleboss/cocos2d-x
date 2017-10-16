@@ -42,10 +42,10 @@ CircularBuffer::~CircularBuffer()
 	free(m_buffer);
 }
 
-CircularBuffer* CircularBuffer::create()
+CircularBuffer* CircularBuffer::create(size_t size)
 {
     CircularBuffer* instance = new CircularBuffer();
-    instance->Allocate(RECV_BUFFER_SIZE);
+    instance->Allocate(size);
     
     return instance;
 }
