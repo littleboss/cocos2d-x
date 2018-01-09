@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2006 The Android Open Source Project
- * Copyright (c) 2014 Chukong Technologies Inc.
+ * Copyright (c) 2014-2017 Chukong Technologies Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.cocos2dx.lib;
 
 import android.app.AlertDialog;
@@ -26,7 +27,6 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnErrorListener;
 import android.net.Uri;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -79,8 +79,6 @@ public class Cocos2dxVideoView extends SurfaceView implements MediaPlayerControl
 
     protected Cocos2dxActivity mCocos2dxActivity = null;
     
-    private DisplayMetrics mDisplayMetrics = null; 
-    
     protected int mViewLeft = 0;
     protected int mViewTop = 0;
     protected int mViewWidth = 0;
@@ -97,12 +95,10 @@ public class Cocos2dxVideoView extends SurfaceView implements MediaPlayerControl
     
     private int mViewTag = 0;
     private boolean mTouchable = true;
+    private boolean isComplete  = false;   //插入一个变量，用来记录是不是完成播放
     
     public Cocos2dxVideoView(Cocos2dxActivity activity,int tag) {
         super(activity);
-        
-        mDisplayMetrics = new DisplayMetrics();
-        activity.getWindowManager().getDefaultDisplay().getMetrics(mDisplayMetrics);
         
         mViewTag = tag;
         mCocos2dxActivity = activity;
@@ -112,7 +108,10 @@ public class Cocos2dxVideoView extends SurfaceView implements MediaPlayerControl
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         if (mVideoWidth == 0 || mVideoHeight == 0) {
-            setMeasuredDimension(mDisplayMetrics.widthPixels, mDisplayMetrics.heightPixels);
+            //解决黑屏。由于某些原因导致mViewWidth、mViewHeight变为0
+            mViewWidth = mVisibleWidth;
+            mViewHeight = mVisibleHeight;
+            setMeasuredDimension(mViewWidth, mViewHeight);
             Log.i(TAG, ""+mViewWidth+ ":" +mViewHeight);
         }
         else {
@@ -214,7 +213,7 @@ public class Cocos2dxVideoView extends SurfaceView implements MediaPlayerControl
         if((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP)
         {
             if (isPlaying()) {
-            	stop();
+                stop();
             } else if(mCurrentState == STATE_PAUSED){
                 resume();
             }
@@ -293,7 +292,7 @@ public class Cocos2dxVideoView extends SurfaceView implements MediaPlayerControl
         release(false);
         
         try {
-            if (mMediaPlayer == null) {
+            //if (mMediaPlayer == null) {
                 mMediaPlayer = new MediaPlayer();
                 mMediaPlayer.setOnPreparedListener(mPreparedListener);
                 mMediaPlayer.setOnVideoSizeChangedListener(mSizeChangedListener);                
@@ -304,10 +303,7 @@ public class Cocos2dxVideoView extends SurfaceView implements MediaPlayerControl
                 mMediaPlayer.setDisplay(mSurfaceHolder);
                 mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 mMediaPlayer.setScreenOnWhilePlaying(true);
-            } else {
-            	mMediaPlayer.reset();
-            	mMediaPlayer.setDisplay(mSurfaceHolder);
-            }
+            //}
             
             mDuration = -1;
             mCurrentBufferPercentage = 0;
@@ -562,7 +558,7 @@ public class Cocos2dxVideoView extends SurfaceView implements MediaPlayerControl
         public void surfaceChanged(SurfaceHolder holder, int format,
                                     int w, int h)
         {
-            boolean isValidState =  (mTargetState == STATE_PLAYING);
+            boolean isValidState =  (mTargetState == STATE_PLAYING)|| !isComplete;
             boolean hasValidSize = (mVideoWidth == w && mVideoHeight == h);
             if (mMediaPlayer != null && isValidState && hasValidSize) {
                 if (mSeekWhenPrepared != 0) {
@@ -582,11 +578,12 @@ public class Cocos2dxVideoView extends SurfaceView implements MediaPlayerControl
         {
             // after we return from this we can't use the surface any more
             mSurfaceHolder = null;
-
-            if(mMediaPlayer != null && mMediaPlayer.isPlaying()){
-            	mSeekWhenPrepared = mMediaPlayer.getCurrentPosition();
-				mMediaPlayer.stop();
-			}
+            if (mCurrentState == STATE_PLAYING) 
+            { 
+                isComplete = mMediaPlayer.getCurrentPosition() == mMediaPlayer.getDuration(); //保存一下当前进度和是否播放完成
+                mSeekWhenPrepared = mMediaPlayer.getCurrentPosition(); //保存一下当前进度和是否播放完成
+            }
+            release(true);
         }
     };
 
