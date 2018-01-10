@@ -252,7 +252,7 @@ bool FileUtilsAndroid::isAbsolutePath(const std::string& strPath) const
     return false;
 }
 
-FileUtils::Status FileUtilsAndroid::getContents(const std::string& filename, ResizableBuffer* buffer)
+FileUtils::Status FileUtilsAndroid::getContents(const std::string& filename, ResizableBuffer* buffer, bool force)
 {
     static const std::string apkprefix("assets/");
     if (filename.empty())
@@ -303,7 +303,7 @@ FileUtils::Status FileUtilsAndroid::getContents(const std::string& filename, Res
 
     unsigned char* content = (unsigned char*)buffer->buffer();
     LuaStack* stack = LuaEngine::getInstance()->getLuaStack();
-    if (stack->isXXTEA(content, readsize)) {
+    if (force || stack->isXXTEA(content, readsize)) {
         ssize_t len = 0;
         unsigned char* xxteaBuffer = stack->xxteaDecrypt(content, readsize, &len);
         
