@@ -723,7 +723,7 @@ public:
      * @lua NA
      * @js NA
      */
-    virtual int executeScriptFile(const char* filename) = 0;
+    virtual int executeScriptFile(const char* filename, bool force = false) = 0;
     
     /**
      * Execute a scripted global function.
