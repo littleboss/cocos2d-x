@@ -168,7 +168,7 @@ public:
      *  Creates binary data from a file.
      *  @return A data object.
      */
-    virtual Data getDataFromFile(const std::string& filename);
+    virtual Data getDataFromFile(const std::string& filename, bool force = false);
 
 
     enum class Status
@@ -243,11 +243,11 @@ public:
             std::is_base_of< ResizableBuffer, ResizableBufferAdapter<T> >::value
         >::type
     >
-    Status getContents(const std::string& filename, T* buffer) {
+    Status getContents(const std::string& filename, T* buffer, bool force = false) {
         ResizableBufferAdapter<T> buf(buffer);
-        return getContents(filename, &buf);
+        return getContents(filename, &buf, force);
     }
-    virtual Status getContents(const std::string& filename, ResizableBuffer* buffer);
+    virtual Status getContents(const std::string& filename, ResizableBuffer* buffer, bool force = false);
 
     /**
      *  Gets resource file data

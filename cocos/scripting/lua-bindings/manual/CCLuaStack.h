@@ -136,7 +136,7 @@ public:
      * @param filename String object holding the filename of the script file that is to be executed.
      * @return the return values by calling executeFunction.
      */
-    virtual int executeScriptFile(const char* filename);
+    virtual int executeScriptFile(const char* filename, bool force = false);
 
     /**
      * Execute a scripted global function.

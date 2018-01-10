@@ -97,9 +97,9 @@ int LuaEngine::executeString(const char *codes)
     return ret;
 }
 
-int LuaEngine::executeScriptFile(const char* filename)
+int LuaEngine::executeScriptFile(const char* filename, bool force)
 {
-    int ret = _stack->executeScriptFile(filename);
+    int ret = _stack->executeScriptFile(filename, force);
     _stack->clean();
     return ret;
 }

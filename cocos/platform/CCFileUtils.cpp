@@ -618,15 +618,15 @@ std::string FileUtils::getStringFromFile(const std::string& filename)
     return s;
 }
 
-Data FileUtils::getDataFromFile(const std::string& filename)
+Data FileUtils::getDataFromFile(const std::string& filename, bool force)
 {
     Data d;
-    getContents(filename, &d);
+    getContents(filename, &d, force);
     return d;
 }
 
 
-FileUtils::Status FileUtils::getContents(const std::string& filename, ResizableBuffer* buffer)
+FileUtils::Status FileUtils::getContents(const std::string& filename, ResizableBuffer* buffer, bool force)
 {
     if (filename.empty())
         return Status::NotExists;
@@ -664,7 +664,7 @@ FileUtils::Status FileUtils::getContents(const std::string& filename, ResizableB
     
     unsigned char* content = (unsigned char*)buffer->buffer();
     LuaStack* stack = LuaEngine::getInstance()->getLuaStack();
-    if (stack->isXXTEA(content, readsize)) {
+    if (force || stack->isXXTEA(content, readsize)) {
         ssize_t len = 0;
         unsigned char* xxteaBuffer = stack->xxteaDecrypt(content, readsize, &len);
         

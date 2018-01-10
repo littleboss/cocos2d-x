@@ -240,7 +240,7 @@ int LuaStack::executeString(const char *codes)
 static const std::string BYTECODE_FILE_EXT    = ".luac";
 static const std::string NOT_BYTECODE_FILE_EXT = ".lua";
 
-int LuaStack::executeScriptFile(const char* filename)
+int LuaStack::executeScriptFile(const char* filename, bool force)
 {
     CCAssert(filename, "CCLuaStack::executeScriptFile() - invalid filename");
 
@@ -282,7 +282,7 @@ int LuaStack::executeScriptFile(const char* filename)
     }
 
     std::string fullPath = utils->fullPathForFilename(buf);
-    Data data = utils->getDataFromFile(fullPath);
+    Data data = utils->getDataFromFile(fullPath, force);
     int rn = 0;
     if (!data.isNull())
     {
@@ -775,8 +775,8 @@ unsigned char* LuaStack::xxteaDecrypt(unsigned char *buffer, ssize_t size, ssize
     xxtea_long len = 0;
     char key[128];
     _mcode->encode(_mKey, key);
-    unsigned char *outbuffer = xxtea_decrypt(buffer + _xxteaSignLen,
-                                             (xxtea_long)size - (xxtea_long)_xxteaSignLen,
+    unsigned char *outbuffer = xxtea_decrypt(buffer + _xxteaSignLen * 2,
+                                             (xxtea_long)size - (xxtea_long)_xxteaSignLen * 2,
                                              (unsigned char*)key,
                                              (xxtea_long)_xxteaKeyLen,
                                              &len);
@@ -821,7 +821,7 @@ int LuaStack::luaLoadChunksFromZIP(lua_State *L)
     do {
         void *buffer = nullptr;
         ZipFile *zip = nullptr;
-        Data zipFileData(utils->getDataFromFile(zipFilePath));
+        Data zipFileData(utils->getDataFromFile(zipFilePath, true));
         unsigned char* bytes = zipFileData.getBytes();
         ssize_t size = zipFileData.getSize();
 
@@ -829,18 +829,16 @@ int LuaStack::luaLoadChunksFromZIP(lua_State *L)
             xxtea_long len = 0;
             char key[128];
             stack->_mcode->encode(stack->_mKey, key);
-            buffer = xxtea_decrypt(bytes + stack->_xxteaSignLen,
-                                   (xxtea_long)size - (xxtea_long)stack->_xxteaSignLen,
+            buffer = xxtea_decrypt(bytes + stack->_xxteaSignLen * 2,
+                                   (xxtea_long)size - (xxtea_long)stack->_xxteaSignLen * 2,
                                    (unsigned char*)key,
                                    (xxtea_long)stack->_xxteaKeyLen,
                                    &len);
             zip = ZipFile::createWithBuffer(buffer, len);
         } else {
-#if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32 || CC_TARGET_PLATFORM == CC_PLATFORM_MAC
             if (size > 0) {
                 zip = ZipFile::createWithBuffer(bytes, (unsigned long)size);
             }
-#endif
         }
 
         if (zip) {
@@ -923,8 +921,8 @@ int LuaStack::luaLoadBuffer(lua_State *L, const char *chunk, int chunkSize, cons
         xxtea_long len = 0;
         char key[128];
         _mcode->encode(_mKey, key);
-        unsigned char* result = xxtea_decrypt((unsigned char*)chunk + _xxteaSignLen,
-                                              (xxtea_long)chunkSize - _xxteaSignLen,
+        unsigned char* result = xxtea_decrypt((unsigned char*)chunk + _xxteaSignLen * 2,
+                                              (xxtea_long)chunkSize - _xxteaSignLen * 2,
                                               (unsigned char*)key,
                                               (xxtea_long)_xxteaKeyLen,
                                               &len);
@@ -934,10 +932,8 @@ int LuaStack::luaLoadBuffer(lua_State *L, const char *chunk, int chunkSize, cons
     }
     else
     {
-#if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32 || CC_TARGET_PLATFORM == CC_PLATFORM_MAC
        skipBOM(chunk, chunkSize);
        r = luaL_loadbuffer(L, chunk, chunkSize, chunkName);
-#endif
     }
 
 #if defined(COCOS2D_DEBUG) && COCOS2D_DEBUG > 0
