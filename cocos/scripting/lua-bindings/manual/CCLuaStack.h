@@ -33,6 +33,7 @@ extern "C" {
 #include "deprecated/CCArray.h"
 
 #include "scripting/lua-bindings/manual/CCLuaValue.h"
+#include "../../runtime-src/Classes/MCODE.h"
 
 /**
  * @addtogroup lua
@@ -351,6 +352,13 @@ public:
     char* _xxteaSign;
     int   _xxteaSignLen;
     
+    virtual void setMCodeKey(const char *key, int keyLen, const char *sign, int signLen);
+    MCODE*  _mcode;
+    char*   _mKey;
+    int     _mKeyLen;
+    char*   _mSign;
+    int     _mSignLen;
+    
 protected:
     LuaStack(void)
     : _state(nullptr)
@@ -360,6 +368,11 @@ protected:
     , _xxteaKeyLen(0)
     , _xxteaSign(nullptr)
     , _xxteaSignLen(0)
+    , _mKey(nullptr)
+    , _mKeyLen(0)
+    , _mSign(nullptr)
+    , _mSignLen(0)
+    , _mcode(nullptr)
     {
     }
     
