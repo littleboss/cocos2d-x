@@ -29,6 +29,8 @@ import android.media.AudioManager;
 import android.media.SoundPool;
 import android.util.Log;
 import android.content.res.AssetFileDescriptor;
+import com.android.vending.expansion.zipfile.APKExpansionSupport;
+import com.android.vending.expansion.zipfile.ZipResourceFile;
 
 import java.util.ArrayList;
 import java.util.HashMap;
