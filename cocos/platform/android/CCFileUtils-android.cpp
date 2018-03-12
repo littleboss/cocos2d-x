@@ -276,11 +276,12 @@ FileUtils::Status FileUtilsAndroid::getContents(const std::string& filename, Res
     {
         if (obbfile->getFileData(relativePath, buffer))
         {
+            size_t obbSize = buffer->size();
             unsigned char* content = (unsigned char*)buffer->buffer();
             LuaStack* stack = LuaEngine::getInstance()->getLuaStack();
-            if (force || stack->isXXTEA(content, 6)) {
+            if (force || stack->isXXTEA(content, obbSize)) {
                 ssize_t len = 0;
-                unsigned char* xxteaBuffer = stack->xxteaDecrypt(content, 6, &len);
+                unsigned char* xxteaBuffer = stack->xxteaDecrypt(content, obbSize, &len);
                 
                 buffer->resize(len);
                 memcpy(buffer->buffer(), xxteaBuffer, len);
