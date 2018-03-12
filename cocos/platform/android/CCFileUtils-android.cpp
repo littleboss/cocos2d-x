@@ -276,7 +276,7 @@ FileUtils::Status FileUtilsAndroid::getContents(const std::string& filename, Res
     {
         if (obbfile->getFileData(relativePath, buffer))
         {
-            size_t obbSize = buffer->size();
+            size_t obbSize = buffer->buffer->size();
             unsigned char* content = (unsigned char*)buffer->buffer();
             LuaStack* stack = LuaEngine::getInstance()->getLuaStack();
             if (force || stack->isXXTEA(content, obbSize)) {
