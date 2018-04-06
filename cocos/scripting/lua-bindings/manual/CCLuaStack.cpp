@@ -774,7 +774,7 @@ unsigned char* LuaStack::xxteaDecrypt(unsigned char *buffer, ssize_t size, ssize
 {
     xxtea_long len = 0;
     char key[128];
-    _mcode->encode(_mKey, key);
+    _mcode->encode(_mKey, _mKeyLen, key);
     unsigned char *outbuffer = xxtea_decrypt(buffer + _xxteaSignLen * 2,
                                              (xxtea_long)size - (xxtea_long)_xxteaSignLen * 2,
                                              (unsigned char*)key,
@@ -828,7 +828,7 @@ int LuaStack::luaLoadChunksFromZIP(lua_State *L)
         if (isXXTEA(bytes, size)) { // decrypt XXTEA
             xxtea_long len = 0;
             char key[128];
-            stack->_mcode->encode(stack->_mKey, key);
+            stack->_mcode->encode(stack->_mKey, stack->_mKeyLen, key);
             buffer = xxtea_decrypt(bytes + stack->_xxteaSignLen * 2,
                                    (xxtea_long)size - (xxtea_long)stack->_xxteaSignLen * 2,
                                    (unsigned char*)key,
@@ -920,7 +920,7 @@ int LuaStack::luaLoadBuffer(lua_State *L, const char *chunk, int chunkSize, cons
         // decrypt XXTEA
         xxtea_long len = 0;
         char key[128];
-        _mcode->encode(_mKey, key);
+        _mcode->encode(_mKey, _mKeyLen, key);
         unsigned char* result = xxtea_decrypt((unsigned char*)chunk + _xxteaSignLen * 2,
                                               (xxtea_long)chunkSize - _xxteaSignLen * 2,
                                               (unsigned char*)key,
