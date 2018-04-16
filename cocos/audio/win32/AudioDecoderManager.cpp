@@ -23,24 +23,49 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 
-#pragma once
+#define LOG_TAG "AudioDecoderManager"
 
-#include "audio/android/AudioDecoder.h"
-
-#include "Tremolo/ivorbisfile.h"
+#include "audio/win32/AudioDecoderManager.h"
+#include "audio/win32/AudioDecoderOgg.h"
+#include "audio/win32/AudioDecoderMp3.h"
+#include "audio/win32/AudioMacros.h"
+#include "platform/CCFileUtils.h"
+#include "base/CCConsole.h"
+#include "mpg123.h"
 
 namespace cocos2d { namespace experimental {
 
-class AudioDecoderOgg : public AudioDecoder
+static bool __mp3Inited = false;
+
+bool AudioDecoderManager::init()
 {
-protected:
-    AudioDecoderOgg();
-    virtual ~AudioDecoderOgg();
+    return true;
+}
 
-    static int fseek64Wrap(void* datasource, ogg_int64_t off, int whence);
-    virtual bool decodeToPcm() override;
+void AudioDecoderManager::destroy()
+{
+    AudioDecoderMp3::destroy();
+}
 
-    friend class AudioDecoderProvider;
-};
+AudioDecoder* AudioDecoderManager::createDecoder(const char* path)
+{
+    std::string suffix = FileUtils::getInstance()->getFileExtension(path);
+    if (suffix == ".ogg")
+    {
+        return new (std::nothrow) AudioDecoderOgg();
+    }
+    else if (suffix == ".mp3")
+    {
+        return new (std::nothrow) AudioDecoderMp3();
+    }
+
+    return nullptr;
+}
+
+void AudioDecoderManager::destroyDecoder(AudioDecoder* decoder)
+{
+    delete decoder;
+}
 
 }} // namespace cocos2d { namespace experimental {
+

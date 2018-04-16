@@ -25,22 +25,18 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "audio/android/AudioDecoder.h"
-
-#include "Tremolo/ivorbisfile.h"
-
 namespace cocos2d { namespace experimental {
 
-class AudioDecoderOgg : public AudioDecoder
+class AudioDecoder;
+
+class AudioDecoderManager
 {
-protected:
-    AudioDecoderOgg();
-    virtual ~AudioDecoderOgg();
-
-    static int fseek64Wrap(void* datasource, ogg_int64_t off, int whence);
-    virtual bool decodeToPcm() override;
-
-    friend class AudioDecoderProvider;
+public:
+    static bool init();
+    static void destroy();
+    static AudioDecoder* createDecoder(const char* path);
+    static void destroyDecoder(AudioDecoder* decoder);
 };
 
 }} // namespace cocos2d { namespace experimental {
+
