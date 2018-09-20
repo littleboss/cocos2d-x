@@ -20,6 +20,12 @@ SimulatorConfig::SimulatorConfig()
     _screenSizeArray.push_back(SimulatorScreenSize("iPhone 5 (640x1136)", 640, 1136));
     _screenSizeArray.push_back(SimulatorScreenSize("iPhone 6 (750x1334)", 750, 1334));
     _screenSizeArray.push_back(SimulatorScreenSize("iPhone 6Plus (1242x2208)", 1242, 2208));
+    _screenSizeArray.push_back(SimulatorScreenSize("iPhone hX (1218x562)", 562, 1218));
+    _screenSizeArray.push_back(SimulatorScreenSize("iPhone X (2436x1125)", 1125, 2436));
+    _screenSizeArray.push_back(SimulatorScreenSize("iPhone XR (1792x828)", 828, 1792));
+    _screenSizeArray.push_back(SimulatorScreenSize("iPhone hXR (896x414)", 414, 896));
+    _screenSizeArray.push_back(SimulatorScreenSize("iPhone Xs Max (2688x1242)", 1242, 2688));
+    _screenSizeArray.push_back(SimulatorScreenSize("iPhone hXs Max (1344x621)", 621, 1344));
     _screenSizeArray.push_back(SimulatorScreenSize("iPad (768x1024)", 768, 1024));
     _screenSizeArray.push_back(SimulatorScreenSize("iPad Retina (1536x2048)", 1536, 2048));
     _screenSizeArray.push_back(SimulatorScreenSize("Android (480x800)", 480, 800));
