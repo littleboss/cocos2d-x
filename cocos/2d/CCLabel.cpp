@@ -474,7 +474,7 @@ void Label::reset()
     _outlineSize = 0.f;
     _bmFontPath = "";
     _systemFontDirty = false;
-    _systemFont = "font/GenJyuuGothic-P-Medium.ttf";
+    _systemFont = "font/SourceHanSansTW-Medium.ttf";
     _systemFontSize = 12;
 
     if (_horizontalKernings)
