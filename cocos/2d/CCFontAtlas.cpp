@@ -1,19 +1,17 @@
 /****************************************************************************
  Copyright (c) 2013      Zynga Inc.
  Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
-
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
  in the Software without restriction, including without limitation the rights
  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  copies of the Software, and to permit persons to whom the Software is
  furnished to do so, subject to the following conditions:
-
  The above copyright notice and this permission notice shall be included in
  all copies or substantial portions of the Software.
-
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -60,7 +58,6 @@ FontAtlas::FontAtlas(Font &theFont)
     {
         _lineHeight = _font->getFontMaxHeight();
         _fontAscender = _fontFreeType->getFontAscender();
-        auto texture = new (std::nothrow) Texture2D;
         _currentPage = 0;
         _currentPageOrigX = 0;
         _currentPageOrigY = 0;
@@ -71,23 +68,6 @@ FontAtlas::FontAtlas(Font &theFont)
         {
             _letterPadding += 2 * FontFreeType::DistanceMapSpread;    
         }
-        _currentPageDataSize = CacheTextureWidth * CacheTextureHeight;
-        auto outlineSize = _fontFreeType->getOutlineSize();
-        if(outlineSize > 0)
-        {
-            _lineHeight += 2 * outlineSize;
-            _currentPageDataSize *= 2;
-        }
-
-        _currentPageData = new (std::nothrow) unsigned char[_currentPageDataSize];
-        memset(_currentPageData, 0, _currentPageDataSize);
-
-        auto  pixelFormat = outlineSize > 0 ? Texture2D::PixelFormat::AI88 : Texture2D::PixelFormat::A8; 
-        texture->initWithData(_currentPageData, _currentPageDataSize, 
-            pixelFormat, CacheTextureWidth, CacheTextureHeight, Size(CacheTextureWidth,CacheTextureHeight) );
-
-        addTexture(texture,0);
-        texture->release();
 
 #if CC_ENABLE_CACHE_TEXTURE_DATA
         auto eventDispatcher = Director::getInstance()->getEventDispatcher();
@@ -96,6 +76,36 @@ FontAtlas::FontAtlas(Font &theFont)
         eventDispatcher->addEventListenerWithFixedPriority(_rendererRecreatedListener, 1);
 #endif
     }
+}
+
+void FontAtlas::reinit()
+{
+    if (_currentPageData)
+    {
+        delete []_currentPageData;
+        _currentPageData = nullptr;
+    }
+    
+    auto texture = new (std::nothrow) Texture2D;
+    
+    _currentPageDataSize = CacheTextureWidth * CacheTextureHeight;
+    
+    auto outlineSize = _fontFreeType->getOutlineSize();
+    if(outlineSize > 0)
+    {
+        _lineHeight += 2 * outlineSize;
+        _currentPageDataSize *= 2;
+    }
+    
+    _currentPageData = new (std::nothrow) unsigned char[_currentPageDataSize];
+    memset(_currentPageData, 0, _currentPageDataSize);
+    
+    auto  pixelFormat = outlineSize > 0 ? Texture2D::PixelFormat::AI88 : Texture2D::PixelFormat::A8;
+    texture->initWithData(_currentPageData, _currentPageDataSize,
+                          pixelFormat, CacheTextureWidth, CacheTextureHeight, Size(CacheTextureWidth,CacheTextureHeight) );
+    
+    addTexture(texture,0);
+    texture->release();
 }
 
 FontAtlas::~FontAtlas()
@@ -132,6 +142,8 @@ void FontAtlas::reset()
     _currentPageOrigX = 0;
     _currentPageOrigY = 0;
     _letterDefinitions.clear();
+    
+    reinit();
 }
 
 void FontAtlas::releaseTextures()
@@ -324,7 +336,10 @@ bool FontAtlas::prepareLetterDefinitions(const std::u16string& utf16Text)
     {
         return false;
     } 
-    
+ 
+    if (!_currentPageData)
+        reinit();     
+ 
     std::unordered_map<unsigned short, unsigned short> codeMapOfNewChar;
     findNewCharacters(utf16Text, codeMapOfNewChar);
     if (codeMapOfNewChar.empty())
@@ -353,7 +368,7 @@ bool FontAtlas::prepareLetterDefinitions(const std::u16string& utf16Text)
             tempDef.validDefinition = true;
             tempDef.width = tempRect.size.width + _letterPadding + _letterEdgeExtend;
             tempDef.height = tempRect.size.height + _letterPadding + _letterEdgeExtend;
-            tempDef.offsetX = tempRect.origin.x + adjustForDistanceMap + adjustForExtend;
+            tempDef.offsetX = tempRect.origin.x - adjustForDistanceMap - adjustForExtend;
             tempDef.offsetY = _fontAscender + tempRect.origin.y - adjustForDistanceMap - adjustForExtend;
 
             if (_currentPageOrigX + tempDef.width > CacheTextureWidth)
@@ -413,6 +428,8 @@ bool FontAtlas::prepareLetterDefinitions(const std::u16string& utf16Text)
             tempDef.V = tempDef.V / scaleFactor;
         }
         else{
+            if(bitmap)
+                delete[] bitmap;
             if (tempDef.xAdvance)
                 tempDef.validDefinition = true;
             else

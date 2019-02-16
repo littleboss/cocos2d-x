@@ -111,6 +111,8 @@ public:
 protected:
     void reset();
     
+    void reinit();
+    
     void releaseTextures();
 
     void findNewCharacters(const std::u16string& u16Text, std::unordered_map<unsigned short, unsigned short>& charCodeMap);
