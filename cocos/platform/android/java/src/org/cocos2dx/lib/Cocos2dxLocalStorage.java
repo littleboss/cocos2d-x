@@ -49,6 +49,9 @@ public class Cocos2dxLocalStorage {
      */
     public static boolean init(String dbName, String tableName, String key) {
         if (Cocos2dxActivity.getContext() != null) {
+            if (mDatabase == null) {
+                SQLiteDatabase.loadLibs(Cocos2dxActivity.getContext());
+            }
             DATABASE_NAME = dbName;
             TABLE_NAME = tableName;
             mDatabaseOpenHelper = new DBOpenHelper(Cocos2dxActivity.getContext());

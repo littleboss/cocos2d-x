@@ -35,7 +35,6 @@ extern "C" {
 #include "scripting/lua-bindings/manual/CCLuaValue.h"
 #include "../../runtime-src/Classes/MCODE.h"
 
-
 /**
  * @addtogroup lua
  * @{

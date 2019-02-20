@@ -274,8 +274,23 @@ FileUtils::Status FileUtilsAndroid::getContents(const std::string& filename, Res
     
     if (obbfile)
     {
-        if (obbfile->getFileData(relativePath, buffer))
+        ssize_t obbSize = 0;
+        if (obbfile->getFileData(relativePath, buffer, &obbSize))
+        {
+            unsigned char* content = (unsigned char*)buffer->buffer();
+            LuaStack* stack = LuaEngine::getInstance()->getLuaStack();
+            if (force || stack->isXXTEA(content, (size_t)obbSize)) {
+                ssize_t len = 0;
+                unsigned char* xxteaBuffer = stack->xxteaDecrypt(content, (size_t)obbSize, &len);
+                
+                buffer->resize(len);
+                memcpy(buffer->buffer(), xxteaBuffer, len);
+                
+                free(xxteaBuffer);
+                xxteaBuffer = nullptr;
+            }
             return FileUtils::Status::OK;
+        }
     }
 
     if (nullptr == assetmanager) {

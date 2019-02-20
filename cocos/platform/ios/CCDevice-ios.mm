@@ -593,6 +593,11 @@ void Device::vibrate(float duration)
     AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
 }
 
+const char* Device::getApp_version(){
+    NSString *strSysVersion = [[UIDevice currentDevice] systemVersion];
+    return [strSysVersion UTF8String];
+}
+
 NS_CC_END
 
 #endif // CC_PLATFORM_IOS

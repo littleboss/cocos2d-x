@@ -29,6 +29,7 @@
 
 #include "storage/local-storage/LocalStorage.h"
 #include "platform/CCPlatformMacros.h"
+#include "cocos2d.h"
 
 #if (CC_TARGET_PLATFORM != CC_PLATFORM_ANDROID)
 
@@ -56,8 +57,17 @@ static void localStorageCreateTable()
     if (ok != SQLITE_OK && ok != SQLITE_DONE)
         printf("Error in CREATE TABLE\n");
 }
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+    int startsWith(const char *s, const char *t){
+        while( isspace(*s) ){ s++; }
+        while( *t ){
+            if( tolower(*s++)!=tolower(*t++) ) return 0;
+        }
+        return *s!='_' && !isalnum(*s);
+    }
+#endif
 
-void localStorageInit( const std::string& key, const std::string& fullpath/* = "" */)
+void localStorageInit( const std::string& key, const std::string& fullpath/* = "" */,  bool skipEncry/* = false*/)
 {
     if (!_initialized) {
 
@@ -66,10 +76,19 @@ void localStorageInit( const std::string& key, const std::string& fullpath/* = "
         if (fullpath.empty())
             ret = sqlite3_open(":memory:", &_db);
         else
-            ret = sqlite3_open(fullpath.c_str(), &_db);
+            ret = sqlite3_open_v2(fullpath.c_str(), &_db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_NOMUTEX | SQLITE_OPEN_PRIVATECACHE, 0);
         
 #if (CC_TARGET_PLATFORM != CC_PLATFORM_WIN32)
-        sqlite3_key(_db, key.c_str(), (int)key.length());
+        bool encry = true;
+    #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+        const char* version = cocos2d::Device::getApp_version();
+        if (startsWith(version, "8") == 0 || startsWith(version, "9") == 0) {
+            encry = false;
+        }
+    #endif
+       if (encry && !skipEncry){
+            sqlite3_key(_db, key.c_str(), (int)key.length());
+       }
 #endif
 
         localStorageCreateTable();

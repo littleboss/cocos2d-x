@@ -1,5 +1,8 @@
 package org.cocos2dx.utils;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Vector;
 
 import org.cocos2dx.lib.Cocos2dxActivity;
@@ -204,18 +207,25 @@ public class PSNative {
 		return info.getMacAddress();
 	}
 
+	private static String getMD5Hash(String s) {
+		MessageDigest m = null;
+		String hash = null;
+		try {
+			m = MessageDigest.getInstance("MD5");
+			m.update(s.getBytes(), 0, s.length());
+			hash = new BigInteger(1, m.digest()).toString(16);
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+		return hash;
+	}
+
 	public static String getOpenUDID() {
-		String id = null;
-		if (mTelephonyManager != null) {
-			id = mTelephonyManager.getDeviceId();
-		}
-		if (id == null) {
-			id = getMacAddress();
-		}
-		if (id == null) {
-			id = "";
-		}
-		return id;
+		String androidId, strUUID;
+		androidId = android.provider.Settings.Secure.getString(mContext.getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
+		strUUID = androidId + "_" + Build.FINGERPRINT;
+		strUUID = getMD5Hash(strUUID);
+		return strUUID;
 	}
 
 	public static String getDeviceName() {

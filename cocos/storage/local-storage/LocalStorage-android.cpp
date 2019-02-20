@@ -54,7 +54,7 @@ static void splitFilename (std::string& str)
     }
 }
 
-void localStorageInit( const std::string& key, const std::string& fullpath/* = "" */)
+void localStorageInit( const std::string& key, const std::string& fullpath/* = "" */, bool skipEncry/* = false*/)
 {
     if (fullpath.empty())
         return;
