@@ -98,6 +98,7 @@ public:
     static Data getTextureDataForText(const char * text, const FontDefinition& textDefinition, TextAlign align, int &width, int &height, bool& hasPremultipliedAlpha);
 
     static const char* getApp_version();//获取版本号
+    static const char* getDeviceModel();//获取机型
 private:
     CC_DISALLOW_IMPLICIT_CONSTRUCTORS(Device);
 };

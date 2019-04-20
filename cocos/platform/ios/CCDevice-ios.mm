@@ -34,6 +34,7 @@
 #include "base/CCEventAcceleration.h"
 #include "base/CCDirector.h"
 #import <UIKit/UIKit.h>
+#import <sys/utsname.h>
 
 // Accelerometer
 #if !defined(CC_TARGET_OS_TVOS)
@@ -596,6 +597,14 @@ void Device::vibrate(float duration)
 const char* Device::getApp_version(){
     NSString *strSysVersion = [[UIDevice currentDevice] systemVersion];
     return [strSysVersion UTF8String];
+}
+
+const char* Device::getDeviceModel(){
+    struct utsname systemInfo;
+    uname(&systemInfo);
+    NSString *deviceString = [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];
+    const char * model = [deviceString UTF8String];
+    return model;
 }
 
 NS_CC_END
