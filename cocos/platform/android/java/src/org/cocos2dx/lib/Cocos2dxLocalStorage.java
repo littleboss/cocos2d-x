@@ -46,12 +46,12 @@ public class Cocos2dxLocalStorage {
      * @param context The Context within which to work, used to create the DB
      * @return 
      */
-    public static boolean init(String dbName, String tableName) {
+    public static boolean init(String dbName, String tableName, String key) {
         if (Cocos2dxActivity.getContext() != null) {
             DATABASE_NAME = dbName;
             TABLE_NAME = tableName;
             mDatabaseOpenHelper = new DBOpenHelper(Cocos2dxActivity.getContext());
-            mDatabase = mDatabaseOpenHelper.getWritableDatabase();
+            mDatabase = mDatabaseOpenHelper.getWritableDatabase(key);
             return true;
         }
         return false;

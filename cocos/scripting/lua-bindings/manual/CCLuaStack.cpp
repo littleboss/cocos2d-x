@@ -111,6 +111,10 @@ LuaStack::~LuaStack()
     {
         lua_close(_state);
     }
+    if (nullptr != _mcode)
+    {
+        delete _mcode;
+    }
 }
 
 LuaStack *LuaStack::create(void)
@@ -237,7 +241,7 @@ int LuaStack::executeString(const char *codes)
 static const std::string BYTECODE_FILE_EXT    = ".luac";
 static const std::string NOT_BYTECODE_FILE_EXT = ".lua";
 
-int LuaStack::executeScriptFile(const char* filename)
+int LuaStack::executeScriptFile(const char* filename, bool force)
 {
     CCAssert(filename, "CCLuaStack::executeScriptFile() - invalid filename");
 
@@ -284,7 +288,7 @@ int LuaStack::executeScriptFile(const char* filename)
     int rn = 0;
     if (!data.isNull())
     {
-        if (luaLoadBuffer(_state, (const char*)data.getBytes(), (int)data.getSize(), fullPath.c_str()) == 0)
+        if (luaLoadBuffer(_state, (const char*)data.getBytes(), (int)data.getSize(), fullPath.c_str(), force) == 0)
         {
             rn = executeFunction(0);
         }
@@ -774,17 +778,11 @@ int LuaStack::luaLoadChunksFromZIP(lua_State *L)
         unsigned char* bytes = zipFileData.getBytes();
         ssize_t size = zipFileData.getSize();
 
-        bool isXXTEA = stack && stack->_xxteaEnabled && size >= stack->_xxteaSignLen
-            && memcmp(stack->_xxteaSign, bytes, stack->_xxteaSignLen) == 0;
-
+        bool isXXTEA = bUseXXTEA(bytes, size);
 
         if (isXXTEA) { // decrypt XXTEA
-            xxtea_long len = 0;
-            buffer = xxtea_decrypt(bytes + stack->_xxteaSignLen,
-                                   (xxtea_long)size - (xxtea_long)stack->_xxteaSignLen,
-                                   (unsigned char*)stack->_xxteaKey,
-                                   (xxtea_long)stack->_xxteaKeyLen,
-                                   &len);
+            ssize_t len = 0;
+            buffer = xxteaDecrypt(bytes, size, &len);
             zip = ZipFile::createWithBuffer(buffer, len);
         } else {
             if (size > 0) {
@@ -862,21 +860,17 @@ void skipBOM(const char*& chunk, int& chunkSize)
 
 } // end anonymous namespace
 
-int LuaStack::luaLoadBuffer(lua_State *L, const char *chunk, int chunkSize, const char *chunkName)
+int LuaStack::luaLoadBuffer(lua_State *L, const char *chunk, int chunkSize, const char *chunkName, bool force)
 {
     int r = 0;
 
-    if (_xxteaEnabled && strncmp(chunk, _xxteaSign, _xxteaSignLen) == 0)
+    if (force || (_xxteaEnabled && strncmp(chunk, _xxteaSign, _xxteaSignLen) == 0))
     {
         // decrypt XXTEA
-        xxtea_long len = 0;
-        unsigned char* result = xxtea_decrypt((unsigned char*)chunk + _xxteaSignLen,
-                                              (xxtea_long)chunkSize - _xxteaSignLen,
-                                              (unsigned char*)_xxteaKey,
-                                              (xxtea_long)_xxteaKeyLen,
-                                              &len);
+        ssize_t len = 0;
+        unsigned char* result = xxteaDecrypt((unsigned char*)chunk, chunkSize, &len);
         unsigned char* content = result;
-        xxtea_long contentSize = len;
+        xxtea_long contentSize = (xxtea_long)len;
         skipBOM((const char*&)content, (int&)contentSize);
         r = luaL_loadbuffer(L, (char*)content, contentSize, chunkName);
         free(result);
@@ -910,6 +904,42 @@ int LuaStack::luaLoadBuffer(lua_State *L, const char *chunk, int chunkSize, cons
     }
 #endif
     return r;
+}
+
+void LuaStack::setMCodeKey(const char *key, int keyLen, const char *sign, int signLen){
+    _mKey = (char*)malloc(keyLen);
+    memcpy(_mKey, key, keyLen);
+    _mKeyLen = keyLen;
+    
+    _mSign = (char*)malloc(signLen);
+    memcpy(_mSign, sign, signLen);
+    _mSignLen = signLen;
+    _mcode = new MCODE((unsigned char*)_mSign);
+}
+
+unsigned char* LuaStack::xxteaDecrypt(unsigned char *buffer, ssize_t size, ssize_t *outlen)
+{
+    xxtea_long len = 0;
+    char key[128];
+    _mcode->encode(_mKey, _mKeyLen, key);
+    unsigned char *outbuffer = xxtea_decrypt(buffer + _xxteaSignLen * 2,
+                                             (xxtea_long)size - (xxtea_long)_xxteaSignLen * 2,
+                                             (unsigned char*)key,
+                                             (xxtea_long)_xxteaKeyLen,
+                                             &len);
+    *outlen = len;
+    return outbuffer;
+}
+
+bool LuaStack::bUseXXTEA(unsigned char *data, ssize_t size)
+{
+    bool bXXTEA = _xxteaEnabled && data;
+    for (unsigned int i = 0; bXXTEA && i < _xxteaSignLen && i < size; ++i)
+    {
+        bXXTEA = data[i] == _xxteaSign[i];
+    }
+    
+    return bXXTEA;
 }
 
 NS_CC_END

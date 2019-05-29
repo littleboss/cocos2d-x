@@ -38,7 +38,7 @@ THE SOFTWARE.
 /** Local Storage support for the JS Bindings.*/
 
 /** Initializes the database. If path is null, it will create an in-memory DB. */
-void CC_DLL localStorageInit( const std::string& fullpath = "");
+void CC_DLL localStorageInit( const std::string& key, const std::string& fullpath = "", bool skipEncry = false);
 
 /** Frees the allocated resources. */
 void CC_DLL localStorageFree();

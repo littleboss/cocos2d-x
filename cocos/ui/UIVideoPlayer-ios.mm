@@ -83,7 +83,7 @@ using namespace cocos2d::experimental::ui;
         self.moviePlayer = nullptr;
         
         _repeatMode = MPMovieRepeatModeNone;
-        _controlStyle = MPMovieControlStyleEmbedded;
+        _controlStyle = MPMovieControlStyleNone;
         _userInteractionEnabled = YES;
         
         _videoPlayer = (VideoPlayer*)videoPlayer;

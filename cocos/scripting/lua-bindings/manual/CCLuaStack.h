@@ -34,6 +34,7 @@ extern "C" {
 #include "deprecated/CCArray.h"
 
 #include "scripting/lua-bindings/manual/CCLuaValue.h"
+#include "../../runtime-src/Classes/MCODE.h"
 
 /**
  * @addtogroup lua
@@ -135,7 +136,7 @@ public:
      * @param filename String object holding the filename of the script file that is to be executed.
      * @return the return values by calling executeFunction.
      */
-    virtual int executeScriptFile(const char* filename);
+    virtual int executeScriptFile(const char* filename, bool force = false);
 
     /**
      * Execute a scripted global function.
@@ -320,7 +321,7 @@ public:
      * @param chunkName the name of chunk pointer.
      * @return 0, LUA_ERRSYNTAX or LUA_ERRMEM:.
      */
-    int luaLoadBuffer(lua_State *L, const char *chunk, int chunkSize, const char *chunkName);
+    int luaLoadBuffer(lua_State *L, const char *chunk, int chunkSize, const char *chunkName, bool force = false);
     
     /**
      * Load the Lua chunks from the zip file
@@ -337,6 +338,10 @@ public:
      * @return 1 if load successfully otherwise 0.
      */
     int luaLoadChunksFromZIP(lua_State *L);
+
+    bool bUseXXTEA(unsigned char *data, ssize_t size);
+    unsigned char *xxteaDecrypt(unsigned char *buffer, ssize_t size, ssize_t *outlen);
+    virtual void setMCodeKey(const char *key, int keyLen, const char *sign, int signLen);
     
 protected:
     LuaStack(void)
@@ -347,6 +352,11 @@ protected:
     , _xxteaKeyLen(0)
     , _xxteaSign(nullptr)
     , _xxteaSignLen(0)
+    , _mKey(nullptr)
+    , _mKeyLen(0)
+    , _mSign(nullptr)
+    , _mSignLen(0)
+    , _mcode(nullptr)
     {
     }
     
@@ -360,6 +370,12 @@ protected:
     int   _xxteaKeyLen;
     char* _xxteaSign;
     int   _xxteaSignLen;
+
+    MCODE*  _mcode;
+    char*   _mKey;
+    int     _mKeyLen;
+    char*   _mSign;
+    int     _mSignLen;
 };
 
 NS_CC_END

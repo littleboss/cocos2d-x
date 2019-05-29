@@ -29,6 +29,7 @@
 #if CC_TARGET_PLATFORM == CC_PLATFORM_IOS
 
 #import <UIKit/UIKit.h>
+#import <sys/utsname.h>
 
 #include "platform/CCDevice.h"
 #include "base/ccTypes.h"
@@ -619,6 +620,19 @@ void Device::vibrate(float duration)
         // play the less annoying tick noise or one of your own
         AudioServicesPlayAlertSound (kSystemSoundID_Vibrate);
     }
+}
+
+const char* Device::getApp_version(){
+    NSString *strSysVersion = [[UIDevice currentDevice] systemVersion];
+    return [strSysVersion UTF8String];
+}
+
+const char* Device::getDeviceModel(){
+    struct utsname systemInfo;
+    uname(&systemInfo);
+    NSString *deviceString = [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];
+    const char * model = [deviceString UTF8String];
+    return model;
 }
 
 NS_CC_END

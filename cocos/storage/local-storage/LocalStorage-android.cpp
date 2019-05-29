@@ -55,7 +55,7 @@ static void splitFilename (std::string& str)
     }
 }
 
-void localStorageInit( const std::string& fullpath)
+void localStorageInit( const std::string& key, const std::string& fullpath/* = "" */)
 {
     if (fullpath.empty())
         return;
@@ -64,7 +64,7 @@ void localStorageInit( const std::string& fullpath)
     {
         std::string strDBFilename = fullpath;
         splitFilename(strDBFilename);
-        if (JniHelper::callStaticBooleanMethod(className, "init", strDBFilename, "data")) {
+        if (JniHelper::callStaticBooleanMethod(className, "init", strDBFilename, "data", key)) {
             _initialized = 1;
         }
     }

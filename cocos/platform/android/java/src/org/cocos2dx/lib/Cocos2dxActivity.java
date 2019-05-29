@@ -45,6 +45,8 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import org.cocos2dx.lib.Cocos2dxHelper.Cocos2dxHelperListener;
+import org.cocos2dx.utils.PSNative;
+import org.cocos2dx.utils.PSNetwork;
 
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
@@ -144,6 +146,8 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
         sContext = this;
         this.mHandler = new Cocos2dxHandler(this);
         
+        PSNative.init(this);
+        PSNetwork.init(this);
         Cocos2dxHelper.init(this);
         
         this.mGLContextAttrs = getGLContextAttrs();
