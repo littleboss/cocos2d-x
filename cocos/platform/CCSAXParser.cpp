@@ -2,6 +2,7 @@
  Copyright (c) 2010 Максим Аксенов
  Copyright (c) 2010 cocos2d-x.org  
  Copyright (c) 2013 Martell Malone
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -127,9 +128,8 @@ SAXParser::~SAXParser(void)
 {
 }
 
-bool SAXParser::init(const char *encoding)
+bool SAXParser::init(const char* /*encoding*/)
 {
-    CC_UNUSED_PARAM(encoding);
     // nothing to do
     return true;
 }

@@ -1,3 +1,27 @@
+/****************************************************************************
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
+ 
+ http://www.cocos2d-x.org
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.
+ ****************************************************************************/
+
 
 #include "SimulatorConfig.h"
 #include <sstream>
@@ -20,12 +44,6 @@ SimulatorConfig::SimulatorConfig()
     _screenSizeArray.push_back(SimulatorScreenSize("iPhone 5 (640x1136)", 640, 1136));
     _screenSizeArray.push_back(SimulatorScreenSize("iPhone 6 (750x1334)", 750, 1334));
     _screenSizeArray.push_back(SimulatorScreenSize("iPhone 6Plus (1242x2208)", 1242, 2208));
-    _screenSizeArray.push_back(SimulatorScreenSize("iPhone hX (1218x562)", 562, 1218));
-    _screenSizeArray.push_back(SimulatorScreenSize("iPhone X (2436x1125)", 1125, 2436));
-    _screenSizeArray.push_back(SimulatorScreenSize("iPhone XR (1792x828)", 828, 1792));
-    _screenSizeArray.push_back(SimulatorScreenSize("iPhone hXR (896x414)", 414, 896));
-    _screenSizeArray.push_back(SimulatorScreenSize("iPhone Xs Max (2688x1242)", 1242, 2688));
-    _screenSizeArray.push_back(SimulatorScreenSize("iPhone hXs Max (1344x621)", 621, 1344));
     _screenSizeArray.push_back(SimulatorScreenSize("iPad (768x1024)", 768, 1024));
     _screenSizeArray.push_back(SimulatorScreenSize("iPad Retina (1536x2048)", 1536, 2048));
     _screenSizeArray.push_back(SimulatorScreenSize("Android (480x800)", 480, 800));

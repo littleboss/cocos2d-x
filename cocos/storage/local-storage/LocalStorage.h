@@ -1,6 +1,7 @@
 /****************************************************************************
 Copyright (c) 2012 Zynga Inc.
 Copyright (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -37,7 +38,7 @@ THE SOFTWARE.
 /** Local Storage support for the JS Bindings.*/
 
 /** Initializes the database. If path is null, it will create an in-memory DB. */
-void CC_DLL localStorageInit( const std::string& key, const std::string& fullpath = "", bool skipEncry = false);
+void CC_DLL localStorageInit( const std::string& fullpath = "");
 
 /** Frees the allocated resources. */
 void CC_DLL localStorageFree();

@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2014 Chukong Technologies Inc.
+ * Copyright (c) 2014-2016 Chukong Technologies Inc.
+ * Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -427,8 +428,8 @@ cc.Speed.prototype._ctor = function(action, speed) {
 
 cc.Follow.prototype._ctor = function (followedNode, rect) {
     if(followedNode)
-        rect ? ret.initWithTarget(followedNode, rect)
-             : ret.initWithTarget(followedNode);
+        rect ? this.initWithTarget(followedNode, rect)
+             : this.initWithTarget(followedNode);
 };
 
 cc.OrbitCamera.prototype._ctor = function (t, radius, deltaRadius, angleZ, deltaAngleZ, angleX, deltaAngleX) {

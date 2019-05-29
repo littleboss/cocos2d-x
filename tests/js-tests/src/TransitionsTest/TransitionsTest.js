@@ -1,7 +1,8 @@
 /****************************************************************************
  Copyright (c) 2008-2010 Ricardo Quesada
  Copyright (c) 2011-2012 cocos2d-x.org
- Copyright (c) 2013-2014 Chukong Technologies Inc.
+ Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
  http://www.cocos2d-x.org
 
@@ -186,7 +187,7 @@ var TransitionBase = BaseTestLayer.extend({
         label.y = y / 2;
         this.addChild(label);
 
-        this.schedule(this.step, 1.0);
+        // this.schedule(this.step, 1.0);
     },
     onRestartCallback:function (sender) {
         var s = new TransitionsTestScene();

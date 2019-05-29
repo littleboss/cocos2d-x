@@ -96,9 +96,4 @@
 -- @field [parent=#cc] PUParticleSystem3D#PUParticleSystem3D PUParticleSystem3D preloaded module
 
 
---------------------------------------------------------
--- the cc CircularBuffer
--- @field [parent=#cc] CircularBuffer#CircularBuffer CircularBuffer preloaded module
-
-
 return nil

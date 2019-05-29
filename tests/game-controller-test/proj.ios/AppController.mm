@@ -1,5 +1,6 @@
 /****************************************************************************
  Copyright (c) 2010 cocos2d-x.org
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -25,7 +26,7 @@
 #import "AppController.h"
 #import "cocos2d.h"
 #import "AppDelegate.h"
-#import "CCEAGLView-ios.h"
+#import "platform/ios/CCEAGLView-ios.h"
 #import "RootViewController.h"
 
 @implementation AppController
@@ -52,7 +53,9 @@ static AppDelegate s_sharedApplication;
     
     // Use RootViewController manage CCEAGLView 
     viewController = [[RootViewController alloc] initWithNibName:nil bundle:nil];
+#if !defined(CC_TARGET_OS_TVOS)
     viewController.wantsFullScreenLayout = YES;
+#endif
     viewController.view = eaglView;
 
     // Set RootViewController to window
@@ -69,7 +72,9 @@ static AppDelegate s_sharedApplication;
     
     [window makeKeyAndVisible];
 
+#if !defined(CC_TARGET_OS_TVOS)
     [[UIApplication sharedApplication] setStatusBarHidden: YES];
+#endif
     
     // IMPORTANT: Setting the GLView should be done after creating the RootViewController
     cocos2d::GLView *glview = cocos2d::GLViewImpl::createWithEAGLView(eaglView);

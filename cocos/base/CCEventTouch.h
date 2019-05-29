@@ -1,5 +1,6 @@
 /****************************************************************************
  Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -45,7 +46,7 @@ class Touch;
 class CC_DLL EventTouch : public Event
 {
 public:
-    static const int MAX_TOUCHES = 2;
+    static const int MAX_TOUCHES = 15;
     
     /** EventCode Touch event code.*/
     enum class EventCode

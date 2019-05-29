@@ -3,6 +3,7 @@ Copyright (c) 2008-2010 Ricardo Quesada
 Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2011      Zynga Inc.
 Copyright (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -211,7 +212,7 @@ bool TextureAtlas::initWithTexture(Texture2D *texture, ssize_t capacity)
     return true;
 }
 
-void TextureAtlas::listenRendererRecreated(EventCustom* event)
+void TextureAtlas::listenRendererRecreated(EventCustom* /*event*/)
 {  
     if (Configuration::getInstance()->supportsShareableVAO())
     {
@@ -612,7 +613,7 @@ void TextureAtlas::drawNumberOfQuads(ssize_t numberOfQuads, ssize_t start)
     if(!numberOfQuads)
         return;
     
-    GL::bindTexture2D(_texture->getName());
+    GL::bindTexture2D(_texture);
 
     auto conf = Configuration::getInstance();
     if (conf->supportsShareableVAO() && conf->supportsMapBuffer())

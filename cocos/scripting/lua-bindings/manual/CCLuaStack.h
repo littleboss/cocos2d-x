@@ -1,6 +1,7 @@
 /****************************************************************************
  Copyright (c) 2011-2012 cocos2d-x.org
  Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -33,7 +34,6 @@ extern "C" {
 #include "deprecated/CCArray.h"
 
 #include "scripting/lua-bindings/manual/CCLuaValue.h"
-#include "../../runtime-src/Classes/MCODE.h"
 
 /**
  * @addtogroup lua
@@ -135,7 +135,7 @@ public:
      * @param filename String object holding the filename of the script file that is to be executed.
      * @return the return values by calling executeFunction.
      */
-    virtual int executeScriptFile(const char* filename, bool force = false);
+    virtual int executeScriptFile(const char* filename);
 
     /**
      * Execute a scripted global function.
@@ -244,8 +244,6 @@ public:
      * @return true if get the no-null function pointer otherwise false.
      */
     virtual bool pushFunctionByHandler(int nHandler);
-
-    virtual int beginCallFunction(const char* functionName);
     
     /**
      * Execute the lua function on the -(numArgs + 1) index on the stack by the numArgs variables passed.
@@ -340,25 +338,6 @@ public:
      */
     int luaLoadChunksFromZIP(lua_State *L);
     
-    /**
-     *  Decrypt by xxtea
-     */
-    unsigned char *xxteaDecrypt(unsigned char *buffer, ssize_t size, ssize_t *outlen);
-    bool isXXTEA(unsigned char *data, ssize_t size);
-    
-    bool  _xxteaEnabled;
-    char* _xxteaKey;
-    int   _xxteaKeyLen;
-    char* _xxteaSign;
-    int   _xxteaSignLen;
-    
-    virtual void setMCodeKey(const char *key, int keyLen, const char *sign, int signLen);
-    MCODE*  _mcode;
-    char*   _mKey;
-    int     _mKeyLen;
-    char*   _mSign;
-    int     _mSignLen;
-    
 protected:
     LuaStack(void)
     : _state(nullptr)
@@ -368,11 +347,6 @@ protected:
     , _xxteaKeyLen(0)
     , _xxteaSign(nullptr)
     , _xxteaSignLen(0)
-    , _mKey(nullptr)
-    , _mKeyLen(0)
-    , _mSign(nullptr)
-    , _mSignLen(0)
-    , _mcode(nullptr)
     {
     }
     
@@ -381,6 +355,11 @@ protected:
     
     lua_State *_state;
     int _callFromLua;
+    bool  _xxteaEnabled;
+    char* _xxteaKey;
+    int   _xxteaKeyLen;
+    char* _xxteaSign;
+    int   _xxteaSignLen;
 };
 
 NS_CC_END

@@ -1,5 +1,6 @@
 /****************************************************************************
-Copyright (c) 2014 Chukong Technologies Inc.
+Copyright (c) 2014-2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -24,16 +25,16 @@ THE SOFTWARE.
 
 package org.cocos2dx.lib;
 
-import java.lang.ref.WeakReference;
-
-import org.cocos2dx.lib.Cocos2dxVideoView.OnVideoEventListener;
-
 import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Message;
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.FrameLayout;
+
+import org.cocos2dx.lib.Cocos2dxVideoView.OnVideoEventListener;
+
+import java.lang.ref.WeakReference;
 
 public class Cocos2dxVideoHelper {
 
@@ -65,7 +66,8 @@ public class Cocos2dxVideoHelper {
     private final static int VideoTaskRestart = 10;
     private final static int VideoTaskKeepRatio = 11;
     private final static int VideoTaskFullScreen = 12;
-    private final static int VideoTaskSetTouchable = 13;
+    private final static int VideoTaskSetLooping = 13;
+     private final static int VideoTaskSetUserInputEnabled = 14;
     final static int KeyEventBack = 1000;
     
     static class VideoHandler extends Handler{
@@ -143,15 +145,6 @@ public class Cocos2dxVideoHelper {
                 }
                 break;
             }
-            case VideoTaskSetTouchable: {
-                Cocos2dxVideoHelper helper = mReference.get();
-                if (msg.arg2 == 1) {
-                    helper._setVideoTouchable(msg.arg1, true);
-                } else {
-                    helper._setVideoTouchable(msg.arg1, false);
-                }
-                break;
-            }
             case VideoTaskRestart: {
                 Cocos2dxVideoHelper helper = mReference.get();
                 helper._restartVideo(msg.arg1);
@@ -166,11 +159,24 @@ public class Cocos2dxVideoHelper {
                 }
                 break;
             }
+            case VideoTaskSetLooping: {
+                Cocos2dxVideoHelper helper = mReference.get();
+                helper._setLooping(msg.arg1, msg.arg2 != 0);
+                break;
+            }
+
+            case VideoTaskSetUserInputEnabled: {
+                Cocos2dxVideoHelper helper = mReference.get();
+                helper._setUserInputEnabled(msg.arg1, msg.arg2 != 0);
+                break;
+            }
+            
             case KeyEventBack: {
                 Cocos2dxVideoHelper helper = mReference.get();
                 helper.onBackKeyEvent();
                 break;
-            }
+            }            
+
             default:
                 break;
             }
@@ -264,6 +270,36 @@ public class Cocos2dxVideoHelper {
             default:
                 break;
             }
+        }
+    }
+
+    public static void setLooping(int index, boolean looping) {
+        Message msg = new Message();
+        msg.what = VideoTaskSetLooping;
+        msg.arg1 = index;
+        msg.arg2 = looping ? 1 : 0;
+        mVideoHandler.sendMessage(msg);
+    }
+
+    private void _setLooping(int index, boolean looping) {
+        Cocos2dxVideoView videoView = sVideoViews.get(index);
+        if (videoView != null) {
+            videoView.setLooping(looping);
+        }
+    }
+
+    public static void setUserInputEnabled(int index, boolean enableInput) {
+        Message msg = new Message();
+        msg.what = VideoTaskSetUserInputEnabled;
+        msg.arg1 = index;
+        msg.arg2 = enableInput ? 1 : 0;
+        mVideoHandler.sendMessage(msg);
+    }
+
+    private void _setUserInputEnabled(int index, boolean enableInput) {
+        Cocos2dxVideoView videoView = sVideoViews.get(index);
+        if (videoView != null) {
+            videoView.setUserInputEnabled(enableInput);
         }
     }
     
@@ -421,26 +457,6 @@ public class Cocos2dxVideoHelper {
             } else {
                 videoView.setVisibility(View.INVISIBLE);
             }
-        }
-    }
-
-    public static void setVideoTouchable(int index, boolean touchable) {
-        Message msg = new Message();
-        msg.what = VideoTaskSetTouchable;
-        msg.arg1 = index;
-        if (touchable) {
-            msg.arg2 = 1;
-        } else {
-            msg.arg2 = 0;
-        }
-        
-        mVideoHandler.sendMessage(msg);
-    }
-    
-    private void _setVideoTouchable(int index, boolean touchable) {
-        Cocos2dxVideoView videoView = sVideoViews.get(index);
-        if (videoView != null) {
-            videoView.setTouchable(touchable);
         }
     }
     

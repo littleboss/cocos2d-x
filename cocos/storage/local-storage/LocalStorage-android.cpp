@@ -1,7 +1,8 @@
 /***************************************************************************
  Copyright (c) 2012 Zynga Inc.
  Copyright (c) 2013 cocos2d-x.org
- Copyright (c) 2013-2014 Chukong Technologic Inc.
+ Copyright (c) 2013-2017 Chukong Technologic Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -42,7 +43,7 @@
 USING_NS_CC;
 static int _initialized = 0;
 
-static std::string className = "org/cocos2dx/lib/Cocos2dxLocalStorage";
+static std::string className = "org.cocos2dx.lib.Cocos2dxLocalStorage";
 
 static void splitFilename (std::string& str)
 {
@@ -54,7 +55,7 @@ static void splitFilename (std::string& str)
     }
 }
 
-void localStorageInit( const std::string& key, const std::string& fullpath/* = "" */, bool skipEncry/* = false*/)
+void localStorageInit( const std::string& fullpath)
 {
     if (fullpath.empty())
         return;
@@ -63,7 +64,7 @@ void localStorageInit( const std::string& key, const std::string& fullpath/* = "
     {
         std::string strDBFilename = fullpath;
         splitFilename(strDBFilename);
-        if (JniHelper::callStaticBooleanMethod(className, "init", strDBFilename, "data", key)) {
+        if (JniHelper::callStaticBooleanMethod(className, "init", strDBFilename, "data")) {
             _initialized = 1;
         }
     }
@@ -90,7 +91,7 @@ bool localStorageGetItem( const std::string& key, std::string *outItem )
     assert( _initialized );
     JniMethodInfo t;
 
-    if (JniHelper::getStaticMethodInfo(t, "org/cocos2dx/lib/Cocos2dxLocalStorage", "getItem", "(Ljava/lang/String;)Ljava/lang/String;"))
+    if (JniHelper::getStaticMethodInfo(t, className.c_str(), "getItem", "(Ljava/lang/String;)Ljava/lang/String;"))
     {
         jstring jkey = t.env->NewStringUTF(key.c_str());
         jstring jret = (jstring)t.env->CallStaticObjectMethod(t.classID, t.methodID, jkey);

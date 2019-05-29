@@ -1,5 +1,6 @@
 /****************************************************************************
  Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -308,6 +309,15 @@ class UIS9EnableScale9FalseTest: public UIScene
 public:
     CREATE_FUNC(UIS9EnableScale9FalseTest);
     
+    virtual bool init() override;
+};
+
+class UIS9GrayStateOpacityTest: public UIScene
+{
+public:
+    CREATE_FUNC(UIS9GrayStateOpacityTest);
+    void sliderEvent(cocos2d::Ref* sender, cocos2d::ui::Slider::EventType type);
+
     virtual bool init() override;
 };
 

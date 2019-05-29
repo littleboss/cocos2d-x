@@ -1,6 +1,7 @@
 /****************************************************************************
  Copyright (c) 2012      cocos2d-x.org
  Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -153,7 +154,7 @@ public:
      * @param filename String object holding the filename of the script file that is to be executed.
      * @return the return values by calling executeFunction.
      */
-    virtual int executeScriptFile(const char* filename, bool force = false) override;
+    virtual int executeScriptFile(const char* filename) override;
     
     /**
      * Execute a scripted global function.

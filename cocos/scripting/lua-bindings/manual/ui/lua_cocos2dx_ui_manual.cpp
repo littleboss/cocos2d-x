@@ -1,5 +1,6 @@
 /****************************************************************************
  Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -162,59 +163,6 @@ tolua_lerror:
 #endif
 }
 
-static int lua_cocos2dx_Widget_addCCSEventListener(lua_State* L)
-{
-    if (nullptr == L)
-        return 0;
-    
-    int argc = 0;
-    Widget* self = nullptr;
-    
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
-    if (!tolua_isusertype(L,1,"ccui.Widget",0,&tolua_err)) goto tolua_lerror;
-#endif
-    
-    self = static_cast<Widget*>(tolua_tousertype(L,1,0));
-    
-#if COCOS2D_DEBUG >= 1
-    if (nullptr == self) {
-        tolua_error(L,"invalid 'self' in function 'lua_cocos2dx_Widget_addCCSEventListener'\n", NULL);
-        return 0;
-    }
-#endif
-    
-    argc = lua_gettop(L) - 1;
-    
-    if (1 == argc)
-    {
-#if COCOS2D_DEBUG >= 1
-        if (!toluafix_isfunction(L,2,"LUA_FUNCTION",0,&tolua_err))
-        {
-            goto tolua_lerror;
-        }
-#endif
-        
-        LUA_FUNCTION handler = (  toluafix_ref_function(L,2,0));
-        
-        self->addCCSEventListener([=](cocos2d::Ref* ref,int eventType){
-            handleUIEvent(handler, ref, eventType);
-        });
-        
-        ScriptHandlerMgr::getInstance()->addCustomHandler((void*)self, handler);
-        return 0;
-    }
-    
-    luaL_error(L, "'addCCSEventListener' function of Widget has wrong number of arguments: %d, was expecting %d\n", argc, 1);
-    return 0;
-    
-#if COCOS2D_DEBUG >= 1
-tolua_lerror:
-    tolua_error(L,"#ferror in function 'addCCSEventListener'.",&tolua_err);
-    return 0;
-#endif
-}
-
 static void extendWidget(lua_State* L)
 {
     lua_pushstring(L, "ccui.Widget");
@@ -223,7 +171,6 @@ static void extendWidget(lua_State* L)
     {
         tolua_function(L, "addTouchEventListener", lua_cocos2dx_Widget_addTouchEventListener);
         tolua_function(L, "addClickEventListener", lua_cocos2dx_Widget_addClickEventListener);
-        tolua_function(L, "addCCSEventListener", lua_cocos2dx_Widget_addCCSEventListener);
     }
     lua_pop(L, 1);
 }
@@ -1228,7 +1175,7 @@ static void extendEventListenerFocusEvent(lua_State* L)
     lua_pop(L, 1);
 }
 
-int register_ui_moudle(lua_State* L)
+int register_ui_module(lua_State* L)
 {
     lua_getglobal(L, "_G");
     if (lua_istable(L,-1))//stack:...,_G,

@@ -1,5 +1,6 @@
 /****************************************************************************
 Copyright (c) 2013 cocos2d-x.org
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -25,8 +26,8 @@ THE SOFTWARE.
 #include "Runtime.h"
 #include "ConfigParser.h"
 #include "ConsoleCommand.h"
-#include "json/document.h"
-#include "json/filestream.h"
+#include "json/document-wrapper.h"
+#include "json/filereadstream.h"
 #include "json/stringbuffer.h"
 
 #include "RuntimeProtocol.h"

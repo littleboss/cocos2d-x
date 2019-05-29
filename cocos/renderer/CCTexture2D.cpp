@@ -2,6 +2,7 @@
 Copyright (c) 2008      Apple Inc. All Rights Reserved.
 Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -32,7 +33,6 @@ THE SOFTWARE.
 */
 
 #include "renderer/CCTexture2D.h"
-#include "renderer/CCTextureCache.h"
 
 #include "platform/CCGL.h"
 #include "platform/CCImage.h"
@@ -554,10 +554,9 @@ bool Texture2D::hasPremultipliedAlpha() const
     return _hasPremultipliedAlpha;
 }
 
-bool Texture2D::initWithData(const void *data, ssize_t dataLen, Texture2D::PixelFormat pixelFormat, int pixelsWide, int pixelsHigh, const Size& contentSize)
+bool Texture2D::initWithData(const void *data, ssize_t dataLen, Texture2D::PixelFormat pixelFormat, int pixelsWide, int pixelsHigh, const Size& /*contentSize*/)
 {
-//    CCASSERT(dataLen>0 && pixelsWide>0 && pixelsHigh>0, "Invalid size");
-    CCASSERT(pixelsWide>0 && pixelsHigh>0, "Invalid size");
+    CCASSERT(dataLen>0 && pixelsWide>0 && pixelsHigh>0, "Invalid size");
 
     //if data has no mipmaps, we will consider it has only one mipmap
     MipmapInfo mipmap;
@@ -581,13 +580,14 @@ bool Texture2D::initWithMipmaps(MipmapInfo* mipmaps, int mipmapsNum, PixelFormat
     }
     
 
-    if(_pixelFormatInfoTables.find(pixelFormat) == _pixelFormatInfoTables.end())
+    auto formatItr = _pixelFormatInfoTables.find(pixelFormat);
+    if(formatItr == _pixelFormatInfoTables.end())
     {
         CCLOG("cocos2d: WARNING: unsupported pixelformat: %lx", (unsigned long)pixelFormat );
         return false;
     }
 
-    const PixelFormatInfo& info = _pixelFormatInfoTables.at(pixelFormat);
+    const PixelFormatInfo& info = formatItr->second;
 
     if (info.compressed && !Configuration::getInstance()->supportsPVRTC()
                         && !Configuration::getInstance()->supportsETC()
@@ -735,8 +735,7 @@ std::string Texture2D::getDescription() const
 // implementation Texture2D (Image)
 bool Texture2D::initWithImage(Image *image)
 {
-    PixelFormat format = Director::getInstance()->getTextureCache()->getTexturePixelFormat(image->getFilePath());
-    return initWithImage(image, format);
+    return initWithImage(image, g_defaultAlphaPixelFormat);
 }
 
 bool Texture2D::initWithImage(Image *image, PixelFormat format)
@@ -1144,6 +1143,7 @@ bool Texture2D::initWithString(const char *text, const FontDefinition& textDefin
     auto textDef = textDefinition;
     auto contentScaleFactor = CC_CONTENT_SCALE_FACTOR();
     textDef._fontSize *= contentScaleFactor;
+    textDef._lineSpacing *= contentScaleFactor;
     textDef._dimensions.width *= contentScaleFactor;
     textDef._dimensions.height *= contentScaleFactor;
     textDef._stroke._strokeSize *= contentScaleFactor;
@@ -1499,10 +1499,17 @@ void Texture2D::removeSpriteFrameCapInset(SpriteFrame* spriteFrame)
 /// halx99 spec, ANDROID ETC1 ALPHA supports.
 void Texture2D::setAlphaTexture(Texture2D* alphaTexture)
 {
-    if (alphaTexture != nullptr) {
-        this->_alphaTexture = alphaTexture;
-        this->_alphaTexture->retain();
-        this->_hasPremultipliedAlpha = true; // PremultipliedAlpha shoud be true.
+    if (alphaTexture != nullptr)
+    {
+        alphaTexture->retain();
+        CC_SAFE_RELEASE(_alphaTexture);
+        _alphaTexture = alphaTexture;
+        _hasPremultipliedAlpha = true; // PremultipliedAlpha should be true.
     }
+}
+
+Texture2D* Texture2D::getAlphaTexture() const
+{
+    return _alphaTexture;
 }
 NS_CC_END

@@ -1,6 +1,7 @@
 /****************************************************************************
 Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -97,8 +98,6 @@ public:
      */
     static Data getTextureDataForText(const char * text, const FontDefinition& textDefinition, TextAlign align, int &width, int &height, bool& hasPremultipliedAlpha);
 
-    static const char* getApp_version();//获取版本号
-    static const char* getDeviceModel();//获取机型
 private:
     CC_DISALLOW_IMPLICIT_CONSTRUCTORS(Device);
 };

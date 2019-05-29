@@ -1,7 +1,8 @@
 /****************************************************************************
  Copyright (c) 2008-2010 Ricardo Quesada
  Copyright (c) 2011-2012 cocos2d-x.org
- Copyright (c) 2013-2014 Chukong Technologies Inc.
+ Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
  http://www.cocos2d-x.org
 
@@ -423,7 +424,7 @@ var SpritePolygonPerformanceTestDynamic = SpritePolygonPerformance.extend({
     },
     initIncrementStats: function () {
         this._incVert = this._polygons.getVertCount();
-        this._incTri = this._polygons.getTriaglesCount();
+        this._incTri = this._polygons.getTrianglesCount();
         this._incPix = this._polygons.getArea();
     },
     makeSprite: function () {

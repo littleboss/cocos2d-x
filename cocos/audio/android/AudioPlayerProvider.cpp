@@ -1,5 +1,6 @@
 /****************************************************************************
-Copyright (c) 2016-2017 Chukong Technologies Inc.
+Copyright (c) 2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -72,7 +73,7 @@ static AudioFileIndicator __audioFileIndicator[] = {
         {"default", 128000}, // If we could not handle the audio format, return default value, the position should be first.
         {".wav",    1024000},
         {".ogg",    128000},
-        {".mp3",    1600000}
+        {".mp3",    160000}
 };
 
 AudioPlayerProvider::AudioPlayerProvider(SLEngineItf engineItf, SLObjectItf outputMixObject,
@@ -168,7 +169,7 @@ IAudioPlayer *AudioPlayerProvider::getAudioPlayer(const std::string &audioFilePa
                     std::unique_lock<std::mutex> lk(_preloadWaitMutex);
                     // Wait for 2 seconds for the decoding in sub thread finishes.
                     ALOGV("FileInfo (%p), Waiting preload (%s) to finish ...", &info, audioFilePath.c_str());
-                    _preloadWaitCond.wait_for(lk, std::chrono::seconds(10));
+                    _preloadWaitCond.wait_for(lk, std::chrono::seconds(2));
                     ALOGV("FileInfo (%p), Waitup preload (%s) ...", &info, audioFilePath.c_str());
                 }
 

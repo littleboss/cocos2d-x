@@ -1,7 +1,8 @@
 /****************************************************************************
  Copyright (c) 2008-2010 Ricardo Quesada
  Copyright (c) 2011-2012 cocos2d-x.org
- Copyright (c) 2013-2014 Chukong Technologies Inc.
+ Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
  http://www.cocos2d-x.org
 
@@ -44,6 +45,7 @@ var autoTestEnabled = autoTestEnabled || false;
 var autoTestCurrentTestName = autoTestCurrentTestName || "N/A";
 
 var TestScene = cc.Scene.extend({
+    _mainMenu :null, 
     ctor:function (bPortrait) {
         this._super();
         this.init();
@@ -52,6 +54,7 @@ var TestScene = cc.Scene.extend({
         var menuItem = new cc.MenuItemLabel(label, this.onMainMenuCallback, this);
 
         var menu = new cc.Menu(menuItem);
+        this._mainMenu = menu;
         menu.x = 0;
         menu.y = 0;
         menuItem.x = winSize.width - 50;
@@ -65,6 +68,7 @@ var TestScene = cc.Scene.extend({
         if (director.isPaused()) {
             director.resume();
         } 
+        this._mainMenu.enabled = false;
         var scene = new cc.Scene();
         var layer = new TestController();
         scene.addChild(layer);
@@ -97,7 +101,7 @@ var TestController = cc.LayerGradient.extend({
         // add close menu
         var closeItem = new cc.MenuItemImage(s_pathClose, s_pathClose, this.onCloseCallback, this);
         closeItem.x = winSize.width - 30;
-	    closeItem.y = winSize.height - 30;
+        closeItem.y = winSize.height - 30;
 
         var subItem1 = new cc.MenuItemFont("Automated Test: Off");
         subItem1.fontSize = 18;
@@ -115,7 +119,7 @@ var TestController = cc.LayerGradient.extend({
 
         var menu = new cc.Menu(closeItem, toggleAutoTestItem);//pmenu is just a holder for the close button
         menu.x = 0;
-	    menu.y = 0;
+        menu.y = 0;
 
         // sort the test title
         testNames.sort(function(first, second){
@@ -130,11 +134,11 @@ var TestController = cc.LayerGradient.extend({
         this._itemMenu = new cc.Menu();//item menu is where all the label goes, and the one gets scrolled
 
         for (var i = 0, len = testNames.length; i < len; i++) {
-            var label = new cc.LabelTTF(testNames[i].title, "Arial", 24);
+            var label = new cc.LabelTTF((i + 1) +". "+ testNames[i].title, "Arial", 24);
             var menuItem = new cc.MenuItemLabel(label, this.onMenuCallback, this);
             this._itemMenu.addChild(menuItem, i + 10000);
             menuItem.x = winSize.width / 2;
-	        menuItem.y = (winSize.height - (i + 1) * LINE_SPACE);
+            menuItem.y = (winSize.height - (i + 1) * LINE_SPACE);
 
             // enable disable
             if ( !cc.sys.isNative) {
@@ -157,15 +161,15 @@ var TestController = cc.LayerGradient.extend({
         }
 
         this._itemMenu.width = winSize.width;
-	    this._itemMenu.height = (testNames.length + 1) * LINE_SPACE;
+        this._itemMenu.height = (testNames.length + 1) * LINE_SPACE;
         this._itemMenu.x = curPos.x;
-	    this._itemMenu.y = curPos.y;
+        this._itemMenu.y = curPos.y;
         this.addChild(this._itemMenu);
         this.addChild(menu, 1);
 
         // 'browser' can use touches or mouse.
         // The benefit of using 'touches' in a browser, is that it works both with mouse events or touches events
-        if ('touches' in cc.sys.capabilities)
+        if ('touches' in cc.sys.capabilities) {
             cc.eventManager.addListener({
                 event: cc.EventListener.TOUCH_ALL_AT_ONCE,
                 onTouchesMoved: function (touches, event) {
@@ -175,6 +179,7 @@ var TestController = cc.LayerGradient.extend({
                     return true;
                 }
             }, this);
+        }
         else if ('mouse' in cc.sys.capabilities) {
             cc.eventManager.addListener({
                 event: cc.EventListener.MOUSE,
@@ -214,7 +219,7 @@ var TestController = cc.LayerGradient.extend({
     onCloseCallback:function () {
         if (cc.sys.isNative)
         {
-            cc.director.end();
+            cc.game.end();
         }
         else {
             window.history && window.history.go(-1);
@@ -232,7 +237,7 @@ var TestController = cc.LayerGradient.extend({
         if( newY > ((testNames.length + 1) * LINE_SPACE - winSize.height))
             newY = ((testNames.length + 1) * LINE_SPACE - winSize.height);
 
-	    this._itemMenu.y = newY;
+        this._itemMenu.y = newY;
     }
 });
 TestController.YOffset = 0;
@@ -544,6 +549,14 @@ var testNames = [
         linksrc:"src/PathTest/PathTest.js",
         testScene:function () {
             return new PathTestScene();
+        }
+    },
+    {
+        title:"PerformanceNow Tests",
+        platforms: PLATFORM_ALL,
+        linksrc:"src/PerformanceNowTest/PerformanceNowTest.js",
+        testScene:function() {
+            return new PerformanceNowTestScene();
         }
     },
     {

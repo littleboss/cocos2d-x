@@ -1,6 +1,7 @@
 /****************************************************************************
  Copyright (c) 2012      cocos2d-x.org
  Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
  http://www.cocos2d-x.org
 
@@ -36,11 +37,7 @@
 #include "base/CCDirector.h"
 #include "base/CCEventCustom.h"
 
-#if _MSC_VER > 1800
-#pragma comment(lib,"lua51-2015.lib")
-#else
 #pragma comment(lib,"lua51.lib")
-#endif
 
 NS_CC_BEGIN
 
@@ -97,9 +94,9 @@ int LuaEngine::executeString(const char *codes)
     return ret;
 }
 
-int LuaEngine::executeScriptFile(const char* filename, bool force)
+int LuaEngine::executeScriptFile(const char* filename)
 {
-    int ret = _stack->executeScriptFile(filename, force);
+    int ret = _stack->executeScriptFile(filename);
     _stack->clean();
     return ret;
 }

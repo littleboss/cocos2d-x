@@ -1,6 +1,7 @@
 /****************************************************************************
 Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -53,52 +54,27 @@ public:
     /**
      *@brief    If the sender doesn't want to attach to the IME, return true.
      */
-    virtual bool onTextFieldAttachWithIME(TextFieldTTF * sender)
-    {
-        CC_UNUSED_PARAM(sender);
-        return false;
-    }
-
+    virtual bool onTextFieldAttachWithIME(TextFieldTTF* sender);
     /**
      *@brief    If the sender doesn't want to detach from the IME, return true.
      */
-    virtual bool onTextFieldDetachWithIME(TextFieldTTF * sender)
-    {
-        CC_UNUSED_PARAM(sender);
-        return false;
-    }
+    virtual bool onTextFieldDetachWithIME(TextFieldTTF* sender);
 
     /**
      *@brief    If the sender doesn't want to insert the text, return true.
      */
-    virtual bool onTextFieldInsertText(TextFieldTTF * sender, const char * text, size_t nLen)
-    {
-        CC_UNUSED_PARAM(sender);
-        CC_UNUSED_PARAM(text);
-        CC_UNUSED_PARAM(nLen);
-        return false;
-    }
+    virtual bool onTextFieldInsertText(TextFieldTTF* sender, const char* text, size_t nLen);
 
     /**
      *@brief    If the sender doesn't want to delete the delText, return true.
      */
-    virtual bool onTextFieldDeleteBackward(TextFieldTTF * sender, const char * delText, size_t nLen)
-    {
-        CC_UNUSED_PARAM(sender);
-        CC_UNUSED_PARAM(delText);
-        CC_UNUSED_PARAM(nLen);
-        return false;
-    }
+    virtual bool onTextFieldDeleteBackward(TextFieldTTF* sender, const char* delText, size_t nLen);
 
     /**
      *@brief    If the sender doesn't want to draw, return true.
      * @js NA
      */
-    virtual bool onVisit(TextFieldTTF * sender,Renderer *renderer, const Mat4 &transform, uint32_t flags)
-    {
-        CC_UNUSED_PARAM(sender);
-        return false;
-    }
+    virtual bool onVisit(TextFieldTTF* sender, Renderer* renderer, const Mat4& transform, uint32_t flags);
 };
 
 /**
@@ -304,6 +280,7 @@ protected:
     void makeStringSupportCursor(std::string& displayText);
     void updateCursorDisplayText();
     void setAttachWithIME(bool isAttachWithIME);
+    void setTextColorInternally(const Color4B& color);
 
 private:
     class LengthStack;

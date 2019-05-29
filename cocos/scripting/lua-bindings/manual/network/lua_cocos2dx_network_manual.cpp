@@ -1,5 +1,6 @@
 /****************************************************************************
  Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -32,6 +33,7 @@ extern "C" {
 #endif
 
 #include "scripting/lua-bindings/manual/network/lua_xml_http_request.h"
+#include "scripting/lua-bindings/manual/network/lua_downloader.h"
 #include "scripting/lua-bindings/manual/CCLuaEngine.h"
 
 
@@ -45,11 +47,12 @@ int register_network_module(lua_State* L)
 #endif
         
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS || CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_WIN32 || CC_TARGET_PLATFORM == CC_PLATFORM_MAC)
-        // tolua_web_socket_open(L);
-        // register_web_socket_manual(L);
+        tolua_web_socket_open(L);
+        register_web_socket_manual(L);
 #endif
         
         register_xml_http_request(L);
+        register_downloader(L);
     }
     lua_pop(L, 1);
     

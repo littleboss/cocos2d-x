@@ -1,6 +1,7 @@
 /****************************************************************************
  Copyright (c) 2012 cocos2d-x.org
  Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -97,7 +98,7 @@ Sprite3DForceDepthTest::Sprite3DForceDepthTest()
 {
     auto orc = cocos2d::Sprite3D::create("Sprite3DTest/orc.c3b");
     orc->setScale(5);
-    orc->setNormalizedPosition(Vec2(.5f,.3f));
+    orc->setPositionNormalized(Vec2(.5f,.3f));
     orc->setPositionZ(40);
     orc->setRotation3D(Vec3(0,180,0));
     orc->setGlobalZOrder(-1);
@@ -107,7 +108,7 @@ Sprite3DForceDepthTest::Sprite3DForceDepthTest()
     auto ship = Sprite3D::create("Sprite3DTest/boss1.obj");
     ship->setScale(5);
     ship->setTexture("Sprite3DTest/boss.png");
-    ship->setNormalizedPosition(Vec2(.5,.5));
+    ship->setPositionNormalized(Vec2(.5,.5));
     ship->setRotation3D(Vec3(90,0,0));
     ship->setForceDepthWrite(true);
     
@@ -132,7 +133,7 @@ std::string Sprite3DForceDepthTest::subtitle() const
 Sprite3DEmptyTest::Sprite3DEmptyTest()
 {
     auto s = Sprite3D::create();
-    s->setNormalizedPosition(Vec2(.5,.5));
+    s->setPositionNormalized(Vec2(.5,.5));
     auto l = Label::create();
     l->setString("Test");
     s->addChild(l);
@@ -236,7 +237,7 @@ Sprite3DUVAnimationTest::Sprite3DUVAnimationTest()
 {
     //the offset use to translating texture
     _cylinder_texture_offset = 0;
-    _shining_duraion = 0;
+    _shining_duration = 0;
     Size visibleSize = Director::getInstance()->getVisibleSize();
 
     //use custom camera
@@ -299,18 +300,18 @@ void Sprite3DUVAnimationTest::cylinderUpdate(float dt)
     _cylinder_texture_offset = (_cylinder_texture_offset >1) ? 0 : _cylinder_texture_offset;
     if(fade_in)
     {
-        _shining_duraion += 0.5*dt;
-        if(_shining_duraion>1) fade_in = false;
+        _shining_duration += 0.5 * dt;
+        if (_shining_duration > 1) fade_in = false;
     }
     else
     {
-        _shining_duraion -= 0.5*dt;
-        if(_shining_duraion<0) fade_in = true;
+        _shining_duration -= 0.5 * dt;
+        if (_shining_duration < 0) fade_in = true;
     }
 
     //pass the result to shader
     _state->setUniformFloat("offset",_cylinder_texture_offset);
-    _state->setUniformFloat("duration",_shining_duraion);
+    _state->setUniformFloat("duration", _shining_duration);
 }
 
 //------------------------------------------------------------------
@@ -786,6 +787,7 @@ void Sprite3DEffectTest::addNewSpriteWithCoords(Vec2 p)
     material->setTechnique("outline_noneskinned");
     sprite->setMaterial(material);
     sprite->setScale(6.f);
+    Director::getInstance()->getTextureCache()->removeUnusedTextures();
     
     //add to scene
     addChild( sprite );
@@ -895,7 +897,7 @@ Sprite3DWithSkinTest::Sprite3DWithSkinTest()
     listener->onTouchesEnded = CC_CALLBACK_2(Sprite3DWithSkinTest::onTouchesEnded, this);
     _eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
     
-    // swich animation quality. In fact, you can set the sprite3d out of frustum to Animate3DQuality::QUALITY_NONE, it can save a lot of cpu time
+    // switch animation quality. In fact, you can set the sprite3d out of frustum to Animate3DQuality::QUALITY_NONE, it can save a lot of cpu time
     MenuItemFont::setFontName("fonts/arial.ttf");
     MenuItemFont::setFontSize(15);
     _animateQuality = (int)Animate3DQuality::QUALITY_LOW;
@@ -949,9 +951,9 @@ void Sprite3DWithSkinTest::addNewSpriteWithCoords(Vec2 p)
         animate->setSpeed(inverse ? -speed : speed);
         animate->setTag(110);
         animate->setQuality((Animate3DQuality)_animateQuality);
-        auto repeate = RepeatForever::create(animate);
-        repeate->setTag(110);
-        sprite->runAction(repeate);
+        auto repeat = RepeatForever::create(animate);
+        repeat->setTag(110);
+        sprite->runAction(repeat);
     }
 }
 
@@ -1430,7 +1432,7 @@ Sprite3DWithOBBPerformanceTest::Sprite3DWithOBBPerformanceTest()
 }
 std::string Sprite3DWithOBBPerformanceTest::title() const
 {
-    return "OBB Collison Performance Test";
+    return "OBB Collision Performance Test";
 }
 std::string Sprite3DWithOBBPerformanceTest::subtitle() const
 {
@@ -2293,8 +2295,7 @@ Animate3DCallbackTest::Animate3DCallbackTest()
 
         ValueMap valuemap0;
         animate->setKeyFrameUserInfo(275, valuemap0);
-        
-        auto listener = EventListenerCustom::create(Animate3DDisplayedNotification, [&](EventCustom* event)
+        _customEventListener = EventListenerCustom::create(Animate3DDisplayedNotification, [&](EventCustom* event)
         {
             auto info = (Animate3D::Animate3DDisplayedEventInfo*)event->getUserData();
             auto node = getChildByTag(100);
@@ -2308,12 +2309,19 @@ Animate3DCallbackTest::Animate3DCallbackTest()
             
             cocos2d::log("frame %d", info->frame);
         });
-        Director::getInstance()->getEventDispatcher()->addEventListenerWithFixedPriority(listener, -1);
+        Director::getInstance()->getEventDispatcher()->addEventListenerWithFixedPriority(_customEventListener, -1);
     }
 }
 
 Animate3DCallbackTest::~Animate3DCallbackTest()
 {
+    cocos2d::log("Animate3DCallbackTest destroied!");
+    if(_customEventListener)
+    {
+        Director::getInstance()->getEventDispatcher()->removeEventListener(_customEventListener);
+        _customEventListener = nullptr;
+    }
+
 }
 
 std::string Animate3DCallbackTest::title() const
@@ -2439,7 +2447,8 @@ CameraBackgroundClearTest::CameraBackgroundClearTest()
 
 void CameraBackgroundClearTest::switch_CameraClearMode(cocos2d::Ref* sender)
 {
-    auto type = _camera->getBackgroundBrush()->getBrushType();
+    auto brush = _camera->getBackgroundBrush();
+    auto type = brush ? brush->getBrushType() : CameraBackgroundBrush::BrushType::NONE;
     if (type == CameraBackgroundBrush::BrushType::NONE)
     {
         _camera->setBackgroundBrush(CameraBackgroundBrush::createDepthBrush(1.f));
@@ -2546,24 +2555,6 @@ Sprite3DNormalMappingTest::Sprite3DNormalMappingTest()
         addChild(sprite);
     }
 
-    float radius = 100.0;
-
-    PointLight* light = PointLight::create(Vec3(0.0, 0.0, 0.0), Color3B(255, 255, 255), 1000);
-    light->runAction(RepeatForever::create(Sequence::create(CallFuncN::create([radius](Node *node){
-        static float angle = 0.0;
-        static bool reverseDir = false;
-        node->setPosition3D(Vec3(radius * cos(angle), 0.0f, radius * sin(angle)));
-        if (reverseDir){
-            angle -= 0.01f;
-            if (angle < 0.0)
-                reverseDir = false;
-        }
-        else{
-            angle += 0.01f;
-            if (3.14159 < angle)
-                reverseDir = true;
-        }
-    }), nullptr)));
     //setup camera
     auto camera = Camera::createPerspective(60.0, s.width / s.height, 1.0f, 1000.f);
     camera->setCameraFlag(CameraFlag::USER1);
@@ -2571,7 +2562,31 @@ Sprite3DNormalMappingTest::Sprite3DNormalMappingTest()
     camera->lookAt(Vec3(0.f, 0.f, 0.f));
     addChild(camera);
 
+    PointLight* light = PointLight::create(Vec3(0.0, 0.0, 0.0), Color3B(255, 255, 255), 1000);
+    light->setTag(100);
     addChild(light);
+    
+    scheduleUpdate();
+}
+
+void Sprite3DNormalMappingTest::update(float dt)
+{
+    static float angle = 0.0f;
+    static bool reverseDir = false;
+    static float radius = 100.0f;
+    
+    auto light = static_cast<PointLight*>(getChildByTag(100));
+    light->setPosition3D(Vec3(radius * cos(angle), 0.0f, radius * sin(angle)));
+    if (reverseDir){
+        angle -= 0.01f;
+        if (angle < 0.0)
+            reverseDir = false;
+    }
+    else{
+        angle += 0.01f;
+        if (3.14159 < angle)
+            reverseDir = true;
+    }
 }
 
 Sprite3DNormalMappingTest::~Sprite3DNormalMappingTest()
@@ -2653,7 +2668,7 @@ void Sprite3DPropertyTest::printMeshName(cocos2d::Ref* sender)
     Vector<Mesh*> meshes =_sprite->getMeshes();
     for(Mesh* mesh : meshes)
     {
-        CCLOG("MeshName: %s ", mesh->getName().c_str());
+        log("MeshName: %s ", mesh->getName().c_str());
     }
     CCLOG("MeshName End");
 }
@@ -2661,7 +2676,7 @@ void Sprite3DPropertyTest::removeUsedTexture(cocos2d::Ref* sender)
 {
     if (_meshTex != nullptr)
     {
-        TextureCache::getInstance()->removeTexture(_meshTex);
+        Director::getInstance()->getTextureCache()->removeTexture(_meshTex);
         this->refreshSpriteRender();
     }
 }
@@ -2670,7 +2685,7 @@ void Sprite3DPropertyTest::resetTexture(cocos2d::Ref* sender)
 {
     if (_meshTex != nullptr)
     {
-        _meshTex = TextureCache::getInstance()->addImage(_texFile);
+        _meshTex = Director::getInstance()->getTextureCache()->addImage(_texFile);
         this->refreshSpriteRender();
     }
 }
