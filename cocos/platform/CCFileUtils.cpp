@@ -42,6 +42,8 @@ THE SOFTWARE.
 #endif
 #include <sys/stat.h>
 
+#include "scripting/lua-bindings/manual/CCLuaEngine.h"
+
 #define DECLARE_GUARD std::lock_guard<std::recursive_mutex> mutexGuard(_mutex)
 
 NS_CC_BEGIN
@@ -644,10 +646,10 @@ void FileUtils::getStringFromFile(const std::string &path, std::function<void (s
     }, std::move(callback));
 }
 
-Data FileUtils::getDataFromFile(const std::string& filename) const
+Data FileUtils::getDataFromFile(const std::string& filename, bool force) const
 {
     Data d;
-    getContents(filename, &d);
+    getContents(filename, &d, force);
     return d;
 }
 
@@ -659,7 +661,7 @@ void FileUtils::getDataFromFile(const std::string& filename, std::function<void(
     }, std::move(callback));
 }
 
-FileUtils::Status FileUtils::getContents(const std::string& filename, ResizableBuffer* buffer) const
+FileUtils::Status FileUtils::getContents(const std::string& filename, ResizableBuffer* buffer, bool force) const
 {
     if (filename.empty())
         return Status::NotExists;
@@ -695,6 +697,20 @@ FileUtils::Status FileUtils::getContents(const std::string& filename, ResizableB
         buffer->resize(readsize);
         return Status::ReadFailed;
     }
+    
+   unsigned char* content = (unsigned char*)buffer->buffer();
+    
+   LuaStack* stack = LuaEngine::getInstance()->getLuaStack();
+   if (force || stack->bUseXXTEA(content, readsize)) {
+       ssize_t len = 0;
+       unsigned char* xxteaBuffer = stack->xxteaDecrypt(content, readsize, &len);
+       
+       buffer->resize(len);
+       memcpy(buffer->buffer(), xxteaBuffer, len);
+       
+       free(xxteaBuffer);
+       xxteaBuffer = nullptr;
+   }
 
     return Status::OK;
 }

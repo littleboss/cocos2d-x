@@ -183,7 +183,7 @@ public:
      *  Creates binary data from a file.
      *  @return A data object.
      */
-    virtual Data getDataFromFile(const std::string& filename) const;
+    virtual Data getDataFromFile(const std::string& filename, bool force = false) const;
     
 
     /**
@@ -268,11 +268,11 @@ public:
             std::is_base_of< ResizableBuffer, ResizableBufferAdapter<T> >::value
         >::type
     >
-    Status getContents(const std::string& filename, T* buffer) const {
+    Status getContents(const std::string& filename, T* buffer, bool force = false) const {
         ResizableBufferAdapter<T> buf(buffer);
-        return getContents(filename, &buf);
+        return getContents(filename, &buf, force);
     }
-    virtual Status getContents(const std::string& filename, ResizableBuffer* buffer) const;
+    virtual Status getContents(const std::string& filename, ResizableBuffer* buffer, bool force = false) const;
 
     /**
      *  Gets resource file data

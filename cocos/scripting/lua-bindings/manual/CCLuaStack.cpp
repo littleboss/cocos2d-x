@@ -284,11 +284,11 @@ int LuaStack::executeScriptFile(const char* filename, bool force)
     }
 
     std::string fullPath = utils->fullPathForFilename(buf);
-    Data data = utils->getDataFromFile(fullPath);
+    Data data = utils->getDataFromFile(fullPath, force);
     int rn = 0;
     if (!data.isNull())
     {
-        if (luaLoadBuffer(_state, (const char*)data.getBytes(), (int)data.getSize(), fullPath.c_str(), force) == 0)
+        if (luaLoadBuffer(_state, (const char*)data.getBytes(), (int)data.getSize(), fullPath.c_str()) == 0)
         {
             rn = executeFunction(0);
         }
@@ -774,7 +774,7 @@ int LuaStack::luaLoadChunksFromZIP(lua_State *L)
     do {
         void *buffer = nullptr;
         ZipFile *zip = nullptr;
-        Data zipFileData(utils->getDataFromFile(zipFilePath));
+        Data zipFileData(utils->getDataFromFile(zipFilePath, true));
         unsigned char* bytes = zipFileData.getBytes();
         ssize_t size = zipFileData.getSize();
 
@@ -783,7 +783,7 @@ int LuaStack::luaLoadChunksFromZIP(lua_State *L)
         if (isXXTEA) { // decrypt XXTEA
             ssize_t len = 0;
             buffer = xxteaDecrypt(bytes, size, &len);
-            zip = ZipFile::createWithBuffer(buffer, len);
+            zip = ZipFile::createWithBuffer(buffer, (unsigned long)len);
         } else {
             if (size > 0) {
                 zip = ZipFile::createWithBuffer(bytes, (unsigned long)size);
@@ -860,11 +860,11 @@ void skipBOM(const char*& chunk, int& chunkSize)
 
 } // end anonymous namespace
 
-int LuaStack::luaLoadBuffer(lua_State *L, const char *chunk, int chunkSize, const char *chunkName, bool force)
+int LuaStack::luaLoadBuffer(lua_State *L, const char *chunk, int chunkSize, const char *chunkName)
 {
     int r = 0;
 
-    if (force || (_xxteaEnabled && strncmp(chunk, _xxteaSign, _xxteaSignLen) == 0))
+    if (_xxteaEnabled && strncmp(chunk, _xxteaSign, _xxteaSignLen) == 0)
     {
         // decrypt XXTEA
         ssize_t len = 0;
@@ -901,7 +901,11 @@ int LuaStack::luaLoadBuffer(lua_State *L, const char *chunk, int chunkSize, cons
             default:
                 CCLOG("[LUA ERROR] load \"%s\", error: unknown.", chunkName);
         }
+        //    const char* error = lua_tostring(L, -1);
+        //    CCLOG("[LUA ERROR] error result: %s",error);
+        //    lua_pop(L, 1);
     }
+
 #endif
     return r;
 }

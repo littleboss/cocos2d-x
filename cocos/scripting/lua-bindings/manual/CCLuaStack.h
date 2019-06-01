@@ -321,7 +321,7 @@ public:
      * @param chunkName the name of chunk pointer.
      * @return 0, LUA_ERRSYNTAX or LUA_ERRMEM:.
      */
-    int luaLoadBuffer(lua_State *L, const char *chunk, int chunkSize, const char *chunkName, bool force = false);
+    int luaLoadBuffer(lua_State *L, const char *chunk, int chunkSize, const char *chunkName);
     
     /**
      * Load the Lua chunks from the zip file
