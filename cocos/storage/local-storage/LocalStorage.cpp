@@ -31,10 +31,10 @@
 #include "storage/local-storage/LocalStorage.h"
 #include "platform/CCPlatformMacros.h"
 #include "cocos2d.h"
-#include "sqlite3.h"
 
 #if (CC_TARGET_PLATFORM != CC_PLATFORM_ANDROID)
 
+#include "sqlite3.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>

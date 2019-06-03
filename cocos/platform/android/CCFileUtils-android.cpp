@@ -34,6 +34,7 @@ THE SOFTWARE.
 #include "android/asset_manager.h"
 #include "android/asset_manager_jni.h"
 #include "base/ZipUtils.h"
+#include "scripting/lua-bindings/manual/CCLuaEngine.h"
 
 #include <stdlib.h>
 #include <sys/stat.h>
@@ -344,7 +345,7 @@ std::vector<std::string> FileUtilsAndroid::listFiles(const std::string& dirPath)
     return fileList;
 }
 
-FileUtils::Status FileUtilsAndroid::getContents(const std::string& filename, ResizableBuffer* buffer) const
+FileUtils::Status FileUtilsAndroid::getContents(const std::string& filename, ResizableBuffer* buffer, bool force) const
 {
     static const std::string apkprefix("assets/");
     if (filename.empty())
@@ -366,8 +367,22 @@ FileUtils::Status FileUtilsAndroid::getContents(const std::string& filename, Res
     
     if (obbfile)
     {
-        if (obbfile->getFileData(relativePath, buffer))
+        ssize_t obbSize = 0;
+        if (obbfile->getFileData(relativePath, buffer, &obbSize)){
+            unsigned char* content = (unsigned char*)buffer->buffer();
+            LuaStack* stack = LuaEngine::getInstance()->getLuaStack();
+            if (force || stack->bUseXXTEA(content, (size_t)obbSize)) {
+                ssize_t len = 0;
+                unsigned char* xxteaBuffer = stack->xxteaDecrypt(content, (size_t)obbSize, &len);
+                
+                buffer->resize(len);
+                memcpy(buffer->buffer(), xxteaBuffer, len);
+                
+                free(xxteaBuffer);
+                xxteaBuffer = nullptr;
+            }
             return FileUtils::Status::OK;
+        }
     }
 
     if (nullptr == assetmanager) {
@@ -391,6 +406,19 @@ FileUtils::Status FileUtilsAndroid::getContents(const std::string& filename, Res
         if (readsize >= 0)
             buffer->resize(readsize);
         return FileUtils::Status::ReadFailed;
+    }
+
+    unsigned char* content = (unsigned char*)buffer->buffer();
+    LuaStack* stack = LuaEngine::getInstance()->getLuaStack();
+    if (force || stack->bUseXXTEA(content, readsize)) {
+        ssize_t len = 0;
+        unsigned char* xxteaBuffer = stack->xxteaDecrypt(content, readsize, &len);
+        
+        buffer->resize(len);
+        memcpy(buffer->buffer(), xxteaBuffer, len);
+        
+        free(xxteaBuffer);
+        xxteaBuffer = nullptr;
     }
 
     return FileUtils::Status::OK;

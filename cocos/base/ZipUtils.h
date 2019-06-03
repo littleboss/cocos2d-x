@@ -293,6 +293,7 @@ typedef struct unz_file_info_s unz_file_info;
         * @return True if successful.
         */
         bool getFileData(const std::string &fileName, ResizableBuffer* buffer);
+        bool getFileData(const std::string &fileName, ResizableBuffer* buffer, ssize_t *size);
 
         std::string getFirstFilename();
         std::string getNextFilename();

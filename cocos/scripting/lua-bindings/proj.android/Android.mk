@@ -100,9 +100,9 @@ LOCAL_SRC_FILES += ../manual/network/lua_cocos2dx_network_manual.cpp \
                    ../../../../external/lua/luasocket/usocket.c
 
 #cocosbuilder
-LOCAL_SRC_FILES += ../manual/cocosbuilder/lua_cocos2dx_cocosbuilder_manual.cpp \
-                   ../manual/cocosbuilder/CCBProxy.cpp \
-                   ../auto/lua_cocos2dx_cocosbuilder_auto.cpp
+# LOCAL_SRC_FILES += ../manual/cocosbuilder/lua_cocos2dx_cocosbuilder_manual.cpp \
+#                    ../manual/cocosbuilder/CCBProxy.cpp \
+#                    ../auto/lua_cocos2dx_cocosbuilder_auto.cpp
 
 #cocostudio
 LOCAL_SRC_FILES += ../manual/cocostudio/lua_cocos2dx_coco_studio_manual.cpp \

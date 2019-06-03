@@ -179,12 +179,13 @@ Particle3D/PU/CCPUBehaviour.cpp \
 Particle3D/PU/CCPUBehaviourManager.cpp \
 Particle3D/PU/CCPUBehaviourTranslator.cpp \
 Particle3D/PU/CCPUSlaveBehaviour.cpp \
+network/CircularBuffer.cpp \
 Particle3D/PU/CCPUSlaveBehaviourTranslator.cpp
 
 LOCAL_STATIC_LIBRARIES := cc_core
 LOCAL_STATIC_LIBRARIES += ccnet
-LOCAL_STATIC_LIBRARIES += ext_box2d
-LOCAL_STATIC_LIBRARIES += ext_bullet
+# LOCAL_STATIC_LIBRARIES += ext_box2d
+# LOCAL_STATIC_LIBRARIES += ext_bullet
 
 LOCAL_CXXFLAGS += -fexceptions
 
