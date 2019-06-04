@@ -856,6 +856,8 @@ public:
      */
     virtual std::string getNewFilename(const std::string &filename) const;
 
+    virtual bool bSupport64BIT() const { return false; };
+
 protected:
     /**
      *  The default constructor.

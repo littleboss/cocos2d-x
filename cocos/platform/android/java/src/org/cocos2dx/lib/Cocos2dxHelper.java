@@ -867,6 +867,22 @@ public class Cocos2dxHelper {
         return Build.VERSION.SDK_INT;
     }
 
+    public static boolean isSupport64BIT() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+            for (String abi : Build.SUPPORTED_64_BIT_ABIS) {
+                if (abi.equals("arm64-v8a")) {
+                    return true;
+                }
+            }
+        } else {
+            String abi = Build.CPU_ABI;
+            if (abi.equals("arm64-v8a")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private static Cocos2dxAccelerometer getAccelerometer() {
         if (null == sCocos2dxAccelerometer)
             Cocos2dxHelper.sCocos2dxAccelerometer = new Cocos2dxAccelerometer(sActivity);

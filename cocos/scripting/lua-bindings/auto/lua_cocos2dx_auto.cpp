@@ -35291,6 +35291,53 @@ int lua_cocos2dx_FileUtils_listFilesRecursively(lua_State* tolua_S)
 
     return 0;
 }
+int lua_cocos2dx_FileUtils_bSupport64BIT(lua_State* tolua_S)
+{
+    int argc = 0;
+    cocos2d::FileUtils* cobj = nullptr;
+    bool ok  = true;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"cc.FileUtils",0,&tolua_err)) goto tolua_lerror;
+#endif
+
+    cobj = (cocos2d::FileUtils*)tolua_tousertype(tolua_S,1,0);
+
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) 
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_cocos2dx_FileUtils_bSupport64BIT'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 0) 
+    {
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_FileUtils_bSupport64BIT'", nullptr);
+            return 0;
+        }
+        bool ret = cobj->bSupport64BIT();
+        tolua_pushboolean(tolua_S,(bool)ret);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.FileUtils:bSupport64BIT",argc, 0);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_cocos2dx_FileUtils_bSupport64BIT'.",&tolua_err);
+#endif
+
+    return 0;
+}
 int lua_cocos2dx_FileUtils_destroyInstance(lua_State* tolua_S)
 {
     int argc = 0;
@@ -35412,6 +35459,7 @@ int lua_register_cocos2dx_FileUtils(lua_State* tolua_S)
         tolua_function(tolua_S,"listFilesAsync",lua_cocos2dx_FileUtils_listFilesAsync);
         tolua_function(tolua_S,"getWritablePath",lua_cocos2dx_FileUtils_getWritablePath);
         tolua_function(tolua_S,"listFilesRecursively",lua_cocos2dx_FileUtils_listFilesRecursively);
+        tolua_function(tolua_S,"bSupport64BIT",lua_cocos2dx_FileUtils_bSupport64BIT);
         tolua_function(tolua_S,"destroyInstance", lua_cocos2dx_FileUtils_destroyInstance);
         tolua_function(tolua_S,"getInstance", lua_cocos2dx_FileUtils_getInstance);
     tolua_endmodule(tolua_S);

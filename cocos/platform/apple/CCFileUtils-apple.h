@@ -62,6 +62,8 @@ public:
 #endif
     
     virtual bool createDirectory(const std::string& path) const override;
+
+    virtual bool bSupport64BIT() const override;
 private:
     virtual bool isFileExistInternal(const std::string& filePath) const override;
     virtual bool removeDirectory(const std::string& dirPath) const override;

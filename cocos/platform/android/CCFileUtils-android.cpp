@@ -443,6 +443,11 @@ string FileUtilsAndroid::getWritablePath() const
     }
 }
 
+bool FileUtilsAndroid::bSupport64BIT() const 
+{ 
+    return JniHelper::callStaticBooleanMethod("org.cocos2dx.lib.Cocos2dxHelper", "isSupport64BIT");
+}
+
 NS_CC_END
 
 #endif // CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID

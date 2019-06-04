@@ -490,4 +490,9 @@ bool FileUtilsApple::createDirectory(const std::string& path) const
     return result;
 }
 
+bool FileUtilsApple::bSupport64BIT() const
+{
+    return true;
+}
+
 NS_CC_END
