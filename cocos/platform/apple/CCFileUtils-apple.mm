@@ -492,6 +492,9 @@ bool FileUtilsApple::createDirectory(const std::string& path) const
 
 bool FileUtilsApple::bSupport64BIT() const
 {
+    if (sizeof(void*) == 4) {
+        return false;
+    }
     return true;
 }
 
