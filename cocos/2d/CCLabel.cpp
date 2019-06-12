@@ -483,7 +483,7 @@ void Label::reset()
     _outlineSize = 0.f;
     _bmFontPath = "";
     _systemFontDirty = false;
-    _systemFont = "Helvetica";
+    _systemFont = "font/SourceHanSansTW-Medium.TTF";
     _systemFontSize = CC_DEFAULT_FONT_LABEL_SIZE;
 
     if (_horizontalKernings)
