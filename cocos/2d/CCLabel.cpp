@@ -2099,7 +2099,7 @@ FontDefinition Label::_getFontDefinition() const
     systemFontDef._fontSize = _systemFontSize;
     systemFontDef._alignment = _hAlignment;
     systemFontDef._vertAlignment = _vAlignment;
-    systemFontDef._lineSpacing = _lineSpacing;
+    systemFontDef._lineSpacing = _textSprite ? 0.0f : _lineHeight;
     systemFontDef._dimensions.width = _labelWidth;
     systemFontDef._dimensions.height = _labelHeight;
     systemFontDef._fontFillColor.r = _textColor.r;
