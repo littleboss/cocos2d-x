@@ -90809,8 +90809,10 @@ int lua_cocos2dx_Device_getApp_version(lua_State* tolua_S)
             tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_Device_getApp_version'", nullptr);
             return 0;
         }
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
         const char* ret = cocos2d::Device::getApp_version();
         tolua_pushstring(tolua_S,(const char*)ret);
+#endif
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "cc.Device:getApp_version",argc, 0);
@@ -90843,8 +90845,10 @@ int lua_cocos2dx_Device_getDeviceModel(lua_State* tolua_S)
             tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_Device_getDeviceModel'", nullptr);
             return 0;
         }
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
         const char* ret = cocos2d::Device::getDeviceModel();
         tolua_pushstring(tolua_S,(const char*)ret);
+#endif
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "cc.Device:getDeviceModel",argc, 0);

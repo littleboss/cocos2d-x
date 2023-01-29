@@ -110,10 +110,6 @@ LuaStack::~LuaStack()
     {
         lua_close(_state);
     }
-    if (nullptr != _mcode)
-    {
-        delete _mcode;
-    }
 }
 
 LuaStack *LuaStack::create(void)
@@ -759,25 +755,12 @@ void LuaStack::cleanupXXTEAKeyAndSign()
     }
 }
 
-void LuaStack::setMCodeKey(const char *key, int keyLen, const char *sign, int signLen){
-    _mKey = (char*)malloc(keyLen);
-    memcpy(_mKey, key, keyLen);
-    _mKeyLen = keyLen;
-    
-    _mSign = (char*)malloc(signLen);
-    memcpy(_mSign, sign, signLen);
-    _mSignLen = signLen;
-    _mcode = new MCODE((unsigned char*)_mSign);
-}
-
 unsigned char* LuaStack::xxteaDecrypt(unsigned char *buffer, ssize_t size, ssize_t *outlen)
 {
-    xxtea_long len = 0;
-    char key[128];
-    _mcode->encode(_mKey, _mKeyLen, key);
-    unsigned char *outbuffer = xxtea_decrypt(buffer + _xxteaSignLen * 2,
-                                             (xxtea_long)size - (xxtea_long)_xxteaSignLen * 2,
-                                             (unsigned char*)key,
+    xxtea_long len = 0;   
+    unsigned char *outbuffer = xxtea_decrypt(buffer + _xxteaSignLen,
+                                             (xxtea_long)size - (xxtea_long)_xxteaSignLen,
+                                             (unsigned char*)_xxteaKey,
                                              (xxtea_long)_xxteaKeyLen,
                                              &len);
     *outlen = len;
@@ -824,14 +807,14 @@ int LuaStack::luaLoadChunksFromZIP(lua_State *L)
         Data zipFileData(utils->getDataFromFile(zipFilePath, true));
         unsigned char* bytes = zipFileData.getBytes();
         ssize_t size = zipFileData.getSize();
+        bool isXXTEA = stack && stack->_xxteaEnabled && size >= stack->_xxteaSignLen
+            && memcmp(stack->_xxteaSign, bytes, stack->_xxteaSignLen) == 0;
 
-        if (isXXTEA(bytes, size)) { // decrypt XXTEA
-            xxtea_long len = 0;
-            char key[128];
-            stack->_mcode->encode(stack->_mKey, stack->_mKeyLen, key);
-            buffer = xxtea_decrypt(bytes + stack->_xxteaSignLen * 2,
-                                   (xxtea_long)size - (xxtea_long)stack->_xxteaSignLen * 2,
-                                   (unsigned char*)key,
+        if (isXXTEA) { // decrypt XXTEA
+            xxtea_long len = 0;           
+            buffer = xxtea_decrypt(bytes + stack->_xxteaSignLen,
+                                   (xxtea_long)size - (xxtea_long)stack->_xxteaSignLen,
+                                   (unsigned char*)_xxteaKey,
                                    (xxtea_long)stack->_xxteaKeyLen,
                                    &len);
             zip = ZipFile::createWithBuffer(buffer, len);
@@ -842,7 +825,7 @@ int LuaStack::luaLoadChunksFromZIP(lua_State *L)
         }
 
         if (zip) {
-            CCLOG("lua_loadChunksFromZIP() - load zip file: %s", zipFilePath.c_str());
+            CCLOG("lua_loadChunksFromZIP() - load zip file: %s%s", zipFilePath.c_str(), isXXTEA ? "*" : "");
             lua_getglobal(L, "package");
             lua_getfield(L, -1, "preload");
 
@@ -915,15 +898,13 @@ int LuaStack::luaLoadBuffer(lua_State *L, const char *chunk, int chunkSize, cons
 {
     int r = 0;
 
-    if (isXXTEA((unsigned char*)chunk, chunkSize))
+    if (_xxteaEnabled && strncmp(chunk, _xxteaSign, _xxteaSignLen) == 0)
     {
         // decrypt XXTEA
         xxtea_long len = 0;
-        char key[128];
-        _mcode->encode(_mKey, _mKeyLen, key);
-        unsigned char* result = xxtea_decrypt((unsigned char*)chunk + _xxteaSignLen * 2,
-                                              (xxtea_long)chunkSize - _xxteaSignLen * 2,
-                                              (unsigned char*)key,
+        unsigned char* result = xxtea_decrypt((unsigned char*)chunk + _xxteaSignLen,
+                                              (xxtea_long)chunkSize - _xxteaSignLen,
+                                              (unsigned char*)_xxteaKey,
                                               (xxtea_long)_xxteaKeyLen,
                                               &len);
         skipBOM((const char*&)result, (int&)len);
