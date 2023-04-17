@@ -26,7 +26,7 @@ android {
 }
 
 dependencies {
-//    implementation fileTree(dir: '../java/libs', include: ['*.jar'])
+    implementation fileTree(dir: '../java/libs', include: ['*.jar'])
     implementation 'net.zetetic:sqlcipher-android:4.5.3'
     implementation 'androidx.sqlite:sqlite:2.1.0'
 }
