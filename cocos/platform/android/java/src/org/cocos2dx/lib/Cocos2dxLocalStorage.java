@@ -27,10 +27,12 @@ import android.content.Context;
 import android.database.Cursor;
 //import android.database.sqlite.SQLiteDatabase;
 //import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Debug;
 import android.util.Log;
-import net.sqlcipher.database.SQLiteDatabase;
-import net.sqlcipher.database.SQLiteOpenHelper;
-
+//import net.sqlcipher.database.SQLiteDatabase;
+//import net.sqlcipher.database.SQLiteOpenHelper;
+import net.zetetic.database.sqlcipher.SQLiteDatabase;
+import net.zetetic.database.sqlcipher.SQLiteOpenHelper;
 
 public class Cocos2dxLocalStorage {
 
@@ -44,19 +46,20 @@ public class Cocos2dxLocalStorage {
     private static SQLiteDatabase mDatabase = null;
     /**
      * Constructor
-     * @param context The Context within which to work, used to create the DB
+//     * @param context The Context within which to work, used to create the DB
      * @return 
      */
     public static boolean init(String dbName, String tableName, String key) {
         if (Cocos2dxActivity.getContext() != null) {
             if (mDatabase == null) {
-                SQLiteDatabase.loadLibs(Cocos2dxActivity.getContext());
+//                SQLiteDatabase.loadLibs(Cocos2dxActivity.getContext());
+                mDatabase = SQLiteDatabase.openOrCreateDatabase(dbName,key,null,null);
             }
             DATABASE_NAME = dbName;
             TABLE_NAME = tableName;
             mDatabaseOpenHelper = new DBOpenHelper(Cocos2dxActivity.getContext());
             
-            mDatabase = mDatabaseOpenHelper.getWritableDatabase(key);
+//            mDatabase = mDatabaseOpenHelper.getWritableDatabase(key);
             return true;
         }
         return false;
@@ -70,7 +73,7 @@ public class Cocos2dxLocalStorage {
     
     public static void setItem(String key, String value) {
         try {
-            String sql = "replace into "+TABLE_NAME+"(key,value)values(?,?)";
+            String sql = "replace into "+TABLE_NAME+"(`key`,value)values(?,?)";
             mDatabase.execSQL(sql, new Object[] { key, value });
         } catch (Exception e) {
             e.printStackTrace();
@@ -80,7 +83,7 @@ public class Cocos2dxLocalStorage {
     public static String getItem(String key) {
         String ret = null;
         try {
-        String sql = "select value from "+TABLE_NAME+" where key=?";
+        String sql = "select value from "+TABLE_NAME+" where `key`=?";
         Cursor c = mDatabase.rawQuery(sql, new String[]{key});  
         while (c.moveToNext()) {
             // only return the first value
@@ -100,7 +103,7 @@ public class Cocos2dxLocalStorage {
     
     public static void removeItem(String key) {
         try {
-            String sql = "delete from "+TABLE_NAME+" where key=?";
+            String sql = "delete from "+TABLE_NAME+" where `key`=?";
             mDatabase.execSQL(sql, new Object[] {key});
         } catch (Exception e) {
             e.printStackTrace();
@@ -128,7 +131,7 @@ public class Cocos2dxLocalStorage {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-            db.execSQL("CREATE TABLE IF NOT EXISTS "+TABLE_NAME+"(key TEXT PRIMARY KEY,value TEXT);");
+            db.execSQL("CREATE TABLE IF NOT EXISTS "+TABLE_NAME+"(`key` TEXT PRIMARY KEY,value TEXT);");
         }
         
         @Override

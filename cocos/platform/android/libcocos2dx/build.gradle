@@ -1,12 +1,12 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 28
-    buildToolsVersion '28.0.3'
+    compileSdkVersion 30
+    buildToolsVersion '30.0.3'
 
     defaultConfig {
-        minSdkVersion 10
-        targetSdkVersion 28
+        minSdkVersion 21
+        targetSdkVersion 30
         versionCode 1
         versionName "1.0"
     }
@@ -26,5 +26,7 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: '../java/libs', include: ['*.jar'])
+//    implementation fileTree(dir: '../java/libs', include: ['*.jar'])
+    implementation 'net.zetetic:sqlcipher-android:4.5.3'
+    implementation 'androidx.sqlite:sqlite:2.1.0'
 }
