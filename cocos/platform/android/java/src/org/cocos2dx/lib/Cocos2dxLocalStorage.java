@@ -54,6 +54,10 @@ public class Cocos2dxLocalStorage {
             if (mDatabase == null) {
 //                SQLiteDatabase.loadLibs(Cocos2dxActivity.getContext());
                 mDatabase = SQLiteDatabase.openOrCreateDatabase(dbName,key,null,null);
+                if(mDatabase != null){
+                    String cTable = "create table if not exists "+TABLE_NAME+"(`key`,value);";
+                    mDatabase.execSQL(cTable);
+                }
             }
             DATABASE_NAME = dbName;
             TABLE_NAME = tableName;
