@@ -29,6 +29,7 @@
 /// @cond DO_NOT_SHOW
 
 #include <string>
+#include <iconv.h>
 #include <unordered_map>
 
 #include "platform/CCPlatformMacros.h"
@@ -131,7 +132,7 @@ protected:
     float _lineHeight;
     Font* _font;
     FontFreeType* _fontFreeType;
-    void* _iconv;
+    iconv_t _iconv;
 
     // Dynamic GlyphCollection related stuff
     int _currentPage;

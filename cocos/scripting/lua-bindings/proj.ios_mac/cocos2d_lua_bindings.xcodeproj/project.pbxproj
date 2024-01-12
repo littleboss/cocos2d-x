@@ -445,7 +445,6 @@
 		5C72ADB31E11302900B26E10 /* lopcodes.def in Sources */ = {isa = PBXBuildFile; fileRef = 7F0DFE611DEE861C0061008D /* lopcodes.def */; };
 		5C72ADB41E11302900B26E10 /* lopcodes.h in Sources */ = {isa = PBXBuildFile; fileRef = 7F0DFE621DEE861C0061008D /* lopcodes.h */; };
 		5C72ADB51E11302900B26E10 /* lopmodes.def in Sources */ = {isa = PBXBuildFile; fileRef = 7F0DFE631DEE861C0061008D /* lopmodes.def */; };
-		5C72ADB61E11302900B26E10 /* loslib.c in Sources */ = {isa = PBXBuildFile; fileRef = 7F0DFE641DEE861C0061008D /* loslib.c */; };
 		5C72ADB71E11302900B26E10 /* lparser.c in Sources */ = {isa = PBXBuildFile; fileRef = 7F0DFE651DEE861C0061008D /* lparser.c */; };
 		5C72ADB81E11302900B26E10 /* lparser.h in Sources */ = {isa = PBXBuildFile; fileRef = 7F0DFE661DEE861C0061008D /* lparser.h */; };
 		5C72ADB91E11302900B26E10 /* lstate.c in Sources */ = {isa = PBXBuildFile; fileRef = 7F0DFE671DEE861C0061008D /* lstate.c */; };
@@ -1473,6 +1472,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 1551A334158F2AB200E66CFE;
@@ -1524,7 +1524,6 @@
 				5C72ADB31E11302900B26E10 /* lopcodes.def in Sources */,
 				5C72ADB41E11302900B26E10 /* lopcodes.h in Sources */,
 				5C72ADB51E11302900B26E10 /* lopmodes.def in Sources */,
-				5C72ADB61E11302900B26E10 /* loslib.c in Sources */,
 				5C72ADB71E11302900B26E10 /* lparser.c in Sources */,
 				5C72ADB81E11302900B26E10 /* lparser.h in Sources */,
 				5C72ADB91E11302900B26E10 /* lstate.c in Sources */,
@@ -1856,7 +1855,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
+				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../../.. $(SRCROOT)/../../.. $(SRCROOT)/../../../base $(SRCROOT)/../../../3d $(SRCROOT)/../../../2d $(SRCROOT)/../../../deprecated $(SRCROOT)/../../../physics $(SRCROOT)/../../../2d/platform $(SRCROOT)/../../../audio/include $(SRCROOT)/../../../editor-support $(SRCROOT)/../../../editor-support/spine $(SRCROOT)/../../../editor-support/cocostudio $(SRCROOT)/../../../editor-support/cocosbuilder $(SRCROOT)/../../../ui $(SRCROOT)/../../../storage $(SRCROOT)/../../../../extensions $(SRCROOT)/../../../../external $(SRCROOT)/../../../../external/chipmunk/include $(SRCROOT)/../../../../external/lua $(SRCROOT)/../../../../external/lua/lua $(SRCROOT)/../../../../external/lua/tolua $(SRCROOT)/../../../editor-support/cocostudio/ActionTimeline $(SRCROOT)/../../../physics3d $(SRCROOT)/../../../navmesh";
 			};
@@ -1887,7 +1886,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
+				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../../.. $(SRCROOT)/../../.. $(SRCROOT)/../../../base $(SRCROOT)/../../../3d $(SRCROOT)/../../../2d $(SRCROOT)/../../../deprecated $(SRCROOT)/../../../physics $(SRCROOT)/../../../2d/platform $(SRCROOT)/../../../audio/include $(SRCROOT)/../../../editor-support $(SRCROOT)/../../../editor-support/spine $(SRCROOT)/../../../editor-support/cocostudio $(SRCROOT)/../../../editor-support/cocosbuilder $(SRCROOT)/../../../ui $(SRCROOT)/../../../storage $(SRCROOT)/../../../../extensions $(SRCROOT)/../../../../external $(SRCROOT)/../../../../external/chipmunk/include $(SRCROOT)/../../../../external/lua $(SRCROOT)/../../../../external/lua/lua $(SRCROOT)/../../../../external/lua/tolua $(SRCROOT)/../../../editor-support/cocostudio/ActionTimeline $(SRCROOT)/../../../physics3d $(SRCROOT)/../../../navmesh";
 				VALIDATE_PRODUCT = YES;
@@ -1957,7 +1956,7 @@
 					"$(inherited)",
 					CC_TARGET_OS_IPHONE,
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../../../../external/lua/luajit/prebuilt/ios";
 				PRODUCT_NAME = "libluacocos2d iOS";
 				SDKROOT = iphoneos;
@@ -1979,7 +1978,7 @@
 					"$(inherited)",
 					CC_TARGET_OS_IPHONE,
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../../../../external/lua/luajit/prebuilt/ios";
 				PRODUCT_NAME = "libluacocos2d iOS";
 				SDKROOT = iphoneos;
